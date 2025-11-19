@@ -43,7 +43,7 @@ body {
   margin: 0;
   word-wrap: break-word;
 }
-a {
+/* a {
   background-color: transparent;
   color: var(--color-primary);
   text-decoration: none;
@@ -221,4 +221,4 @@ pre code:after,
 pre tt:before,
 pre tt:after {
   content: none;
-}
+} */
