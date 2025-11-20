@@ -24,6 +24,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-helmet": "^6.1.0",
+    "react-icons": "^5.5.0",
+    "react-toastify": "^11.0.5",
     "typescript": "^5.9.3"
   },
   "devDependencies": {
@@ -43,8 +45,8 @@
   "scripts": {
     "build": "gatsby build",
     "develop": "gatsby develop",
-    "dev":"gatsby develop",
-    "dev:redux":"GATSBY_DISABLE_LMDB=1 GATSBY_DB_NODES=redux gatsby develop",
+    "dev": "gatsby develop",
+    "dev:redux": "GATSBY_DISABLE_LMDB=1 GATSBY_DB_NODES=redux gatsby develop",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md,css}\"",
     "start": "gatsby develop",
     "serve": "gatsby serve",

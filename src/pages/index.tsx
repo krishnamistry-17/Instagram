@@ -2,26 +2,24 @@ import * as React from "react"
 import type { HeadFC } from "gatsby"
 import Layout from "../components/layout"
 import Seo from "../components/seo"
+import Stories from "../components/stories"
+import Content from "../components/content"
+import Suggestions from "../components/suggestions"
 
 const IndexPage: React.FC = () => {
   return (
     <Layout>
-      <section className="text-center py-16">
-        <h1 className="text-4xl font-bold tracking-tight text-red-500">
-          Welcome to Gatsby + Tailwind
-        </h1>
-        <p className="mt-4 text-gray-600">
-          Edit <code>src/pages/index.tsx</code> to get started.
-        </p>
-        <div className="mt-8">
-          <a
-            className="inline-block rounded-md bg-gray-900 text-white px-5 py-2 hover:opacity-90"
-            href="https://www.gatsbyjs.com/docs/"
-          >
-            Gatsby Docs
-          </a>
+      <div className="max-w-6xl mx-auto sm:px-4 md:px-6 lg:px-8 py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_340px] gap-8">
+          <div className="flex flex-col gap-6">
+            <Stories />
+            <Content />
+          </div>
+          <aside>
+            <Suggestions />
+          </aside>
         </div>
-      </section>
+      </div>
     </Layout>
   )
 }

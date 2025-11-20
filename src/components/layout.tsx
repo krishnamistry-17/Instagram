@@ -1,13 +1,8 @@
-/**
- * Layout component that queries for data
- * with Gatsby's useStaticQuery component
- */
-
 import * as React from "react"
 import { useStaticQuery, graphql } from "gatsby"
-
 import Header from "./header"
 import "./layout.css"
+import { ToastContainer } from "react-toastify"
 
 type SiteTitleQuery = {
   site: {
@@ -36,24 +31,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   return (
     <>
-      <Header siteTitle={siteTitle} />
-      <div
-        style={{
-          margin: `0 auto`,
-          maxWidth: `var(--size-content)`,
-          padding: `var(--size-gutter)`,
-        }}
-      >
+      <Header />
+      <div>
+        <ToastContainer />
         <main>{children}</main>
-        <footer
-          style={{
-            marginTop: `var(--space-5)`,
-            fontSize: `var(--font-sm)`,
-          }}
-        >
+        {/* <footer>
           © {new Date().getFullYear()} &middot; Built with{" "}
           <a href="https://www.gatsbyjs.com">Gatsby</a>
-        </footer>
+        </footer> */}
       </div>
     </>
   )

@@ -2,7 +2,7 @@
 export default {
   siteMetadata: {
     //define the site metadata
-    title: "My Gatsby Site",
+    title: "Instagram",
     description: "A simple Gatsby site",
     author: "John Doe",
   },

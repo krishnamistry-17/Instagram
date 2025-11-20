@@ -43,6 +43,32 @@ body {
   margin: 0;
   word-wrap: break-word;
 }
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+@keyframes rotateAround {
+  0% {
+    transform: rotate(0deg) translateX(100px) rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg) translateX(100px) rotate(-360deg);
+  }
+}
+
+.rotate-animation {
+  animation: rotateAround 2s linear infinite;
+}
+
+
+
+
+
 /* a {
   background-color: transparent;
   color: var(--color-primary);

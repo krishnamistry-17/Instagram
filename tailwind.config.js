@@ -11,6 +11,15 @@ module.exports = {
         xl: "1280px",
         "2xl": "1536px",
       },
+      keyframes: {
+        "spin-once": {
+          "0%": { transform: "rotate(0deg)" },
+          "100%": { transform: "rotate(360deg)" },
+        },
+      },
+      animation: {
+        "spin-slow": "spin-once 1s linear forwards",
+      },
     },
   },
   plugins: [require("@tailwindcss/typography"), require("@tailwindcss/forms")],
