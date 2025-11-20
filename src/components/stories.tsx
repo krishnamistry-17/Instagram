@@ -2,6 +2,7 @@ import * as React from "react"
 import { StaticImage } from "gatsby-plugin-image"
 import { RxCross2 } from "react-icons/rx"
 import { MdNavigateNext, MdNavigateBefore } from "react-icons/md"
+import { IoAdd } from "react-icons/io5"
 
 const Stories: React.FC = () => {
   const users = React.useMemo(
@@ -24,30 +25,18 @@ const Stories: React.FC = () => {
   const [rotating, setRotating] = React.useState<Record<number, boolean>>({})
 
   const [angles, setAngles] = React.useState<Record<number, number>>({})
-  const [preOpenIdx, setPreOpenIdx] = React.useState<number | null>(null)
-  const [preProgress, setPreProgress] = React.useState(0)
-  const rafRef = React.useRef<number | null>(null)
+  const [openingIdx, setOpeningIdx] = React.useState<number | null>(null)
 
   const handleCircleClick = (idx: number) => {
-    if (preOpenIdx !== null || isOpen) return
-    setPreOpenIdx(idx)
-    setPreProgress(0)
-    const durationMs = 3000
-    const start = performance.now()
-    const tick = (t: number) => {
-      const elapsed = t - start
-      const pct = Math.min((elapsed / durationMs) * 100, 100)
-      setPreProgress(pct)
-      if (elapsed < durationMs) {
-        rafRef.current = requestAnimationFrame(tick)
-      } else {
-        setCurrentStory(idx)
-        setIsOpen(true)
-        setPreOpenIdx(null)
-        setPreProgress(0)
-      }
+    if (openingIdx !== null || isOpen) return
+    setOpeningIdx(idx)
+  }
+  const handleRingEnd = (idx: number) => {
+    if (openingIdx === idx) {
+      setCurrentStory(idx)
+      setIsOpen(true)
+      setOpeningIdx(null)
     }
-    rafRef.current = requestAnimationFrame(tick)
   }
 
   const duration = 10
@@ -123,66 +112,22 @@ const Stories: React.FC = () => {
                   onClick={() => handleCircleClick(idx)}
                 >
                   {/* Static gradient ring background (match suggestions width p-[2px]) */}
-                  {preOpenIdx !== idx && (
+                  {openingIdx !== idx && (
                     <div className="absolute inset-0 rounded-full p-[2px] bg-linear-to-tr from-pink-500 to-yellow-500" />
                   )}
 
-                  {/* SVG progress ring (pre-open), image stays static */}
-                  {preOpenIdx === idx && (
-                    <svg
-                      className="absolute inset-0 w-full h-full transform -rotate-90 pointer-events-none"
-                      viewBox="0 0 64 64"
-                    >
-                      {(() => {
-                        const strokeWidth = 4
-                        const center = 32
-                        const radius = center - strokeWidth / 2
-                        const circumference = 2 * Math.PI * radius
-                        const offset =
-                          circumference - (preProgress / 100) * circumference
-                        const gradId = `storyGrad-${idx}`
-
-                        return (
-                          <>
-                            <defs>
-                              <linearGradient
-                                id={gradId}
-                                x1="0"
-                                y1="0"
-                                x2="64"
-                                y2="64"
-                              >
-                                <stop offset="0%" stopColor="#ec4899" />
-                                <stop offset="100%" stopColor="#f97316" />
-                              </linearGradient>
-                            </defs>
-
-                            {/* Base circle */}
-                            <circle
-                              cx={center}
-                              cy={center}
-                              r={radius}
-                              stroke="transparent"
-                              strokeWidth={strokeWidth}
-                              fill="none"
-                            />
-
-                            {/* Animated circle */}
-                            <circle
-                              cx={center}
-                              cy={center}
-                              r={radius}
-                              stroke={`url(#${gradId})`}
-                              strokeWidth={strokeWidth}
-                              fill="none"
-                              strokeLinecap="round"
-                              strokeDasharray={circumference}
-                              strokeDashoffset={offset}
-                            />
-                          </>
-                        )
-                      })()}
-                    </svg>
+                  {/* Sweep gradient ring overlay with fixed thickness */}
+                  {openingIdx === idx && (
+                    <div
+                      className="story-ring-rotator story-ring-sweep"
+                      style={
+                        {
+                          "--ring": "3px",
+                          animationDuration: "3s",
+                        } as React.CSSProperties
+                      }
+                      onAnimationEnd={() => handleRingEnd(idx)}
+                    />
                   )}
 
                   {/* Static inner image */}
@@ -192,6 +137,11 @@ const Stories: React.FC = () => {
                       className="w-full h-full rounded-full object-cover"
                       alt={user.name}
                     />
+                    {user.name === "you" && (
+                      <div className=" absolute bottom-0 right-0 w-5 h-5 rounded-full bg-white p-[3px] z-10">
+                        <IoAdd className="w-full h-full bg-blue-500 text-white rounded-full" />
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

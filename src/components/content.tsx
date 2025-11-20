@@ -9,7 +9,7 @@ import { toast } from "react-toastify"
 
 const Content: React.FC = () => {
   const posts = React.useMemo(
-    () => [
+    () => [ 
       {
         id: 1,
         userName: "alice",
@@ -19,14 +19,14 @@ const Content: React.FC = () => {
           "Enjoying a sunny day exploring the city. #weekend #sunny #cityvibes",
         time: "2 hours ago",
       },
-      // {
-      //   id: 2,
-      //   userName: "bob",
-      //   location: "New York, NY",
-      //   likes: 89,
-      //   caption: "Coffee and code",
-      //   time: "6 hours ago",
-      // },
+      {
+        id: 2,
+        userName: "bob",
+        location: "New York, NY",
+        likes: 89,
+        caption: "Coffee and code",
+        time: "6 hours ago",
+      },
     ],
     []
   )

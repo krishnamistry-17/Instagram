@@ -5,9 +5,12 @@ import { BsFillChatDotsFill } from "react-icons/bs"
 import { MdFavoriteBorder } from "react-icons/md"
 import { IoMdMenu } from "react-icons/io"
 import { RxCross2 } from "react-icons/rx"
+import { StaticImage } from "gatsby-plugin-image"
+import { IoSearch } from "react-icons/io5"
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false)
+  const [isSearchOpen, setIsSearchOpen] = React.useState(false)
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen)
   }
@@ -31,7 +34,26 @@ const Header: React.FC = () => {
             Instagram
           </Link>
         </h1>
+        <div className="relative w-56 md:w-72 h-9 flex items-center justify-center">
+          <div
+            className={`w-full h-full border border-gray-200 rounded-md px-3 flex items-center transition-opacity duration-200 ${
+              isSearchOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+            }`}
+          >
+            <input
+              type="search"
+              placeholder="Search"
+              className="w-full bg-transparent focus:outline-none focus:ring-0"
+            />
+          </div>
+        </div>
         <div className="flex items-center gap-4">
+          <button
+            onClick={() => setIsSearchOpen(!isSearchOpen)}
+            className=" md:block hidden"
+          >
+            <IoSearch className="w-5 h-5" />
+          </button>
           <Link to="/" className=" ">
             <FaHouse className="text-md" />
           </Link>
@@ -68,7 +90,15 @@ const Header: React.FC = () => {
           >
             <div className="flex items-center justify-between px-5 py-4 border-b">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gray-200" />
+                <div className="w-10 h-10 rounded-full bg-linear-to-tr from-pink-500 to-yellow-500 p-[2px]">
+                  <div className="w-full h-full rounded-full bg-white p-[3px]">
+                    <StaticImage
+                      src="../images/image.png"
+                      className="w-8 h-8 rounded-full object-cover"
+                      alt="suggestion 1"
+                    />
+                  </div>
+                </div>
                 <div className="leading-tight">
                   <p className="text-md font-semibold">John Doe</p>
                   <p className="text-xs text-gray-500">@johndoe</p>
