@@ -1,5 +1,6 @@
 import { StaticImage } from "gatsby-plugin-image"
 import * as React from "react"
+import ProfileButton from "./profilebutton"
 
 const Suggestions: React.FC = () => {
   const suggestions = React.useMemo(
@@ -28,15 +29,7 @@ const Suggestions: React.FC = () => {
               className="px-2 py-2 flex items-center justify-between hover:bg-gray-50 rounded"
             >
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-linear-to-tr from-pink-500 to-yellow-500 p-[2px]">
-                  <div className="w-full h-full rounded-full bg-white p-[3px]">
-                    <StaticImage
-                      src="../images/image.png"
-                      className="w-8 h-8 rounded-full object-cover"
-                      alt="suggestion 1"
-                    />
-                  </div>
-                </div>
+                <ProfileButton />
 
                 <div className="leading-tight">
                   <p className="text-sm font-semibold">{s.name}</p>

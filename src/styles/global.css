@@ -17,8 +17,10 @@
 .story-ring-rotator {
   position: absolute;
   inset: 0;
+  
   border-radius: 9999px;
-  background: conic-gradient(#ec4899, #f97316, #ec4899);
+  
+  background: conic-gradient(#ec4899, #f97316, #ec4848);
   z-index: 30;
   /* Show only the outer ring stroke using a radial mask */
   -webkit-mask: radial-gradient(
@@ -33,6 +35,7 @@
   );
   pointer-events: none;
 }
+
 
 /* Sweep progress from right (0deg) → clockwise using a conic mask */
 @property --sweep {
@@ -59,4 +62,9 @@
   animation: ring-sweep 3s linear forwards;
 }
 
-
+@keyframes ping {
+  75%, 100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}

@@ -29,12 +29,12 @@ const Stories: React.FC = () => {
       ],
       [
         { type: "image", id: "image2" as const },
-        { type: "video", id: "video1" as const },
         { type: "image", id: "image3" as const },
+        { type: "video", id: "video1" as const },
         { type: "image", id: "image4" as const },
       ],
       [
-        { type: "image", id: "example" as const },
+        { type: "image", id: "image1" as const },
         { type: "image", id: "image3" as const },
         { type: "video", id: "video1" as const },
         { type: "image", id: "image4" as const },
@@ -57,7 +57,6 @@ const Stories: React.FC = () => {
   const [currentSlide, setCurrentSlide] = React.useState(0)
   const [progress, setProgress] = React.useState(0)
   const [rotating, setRotating] = React.useState<Record<number, boolean>>({})
-
   const [angles, setAngles] = React.useState<Record<number, number>>({})
   const [openingIdx, setOpeningIdx] = React.useState<number | null>(null)
   const videoRef = React.useRef<HTMLVideoElement | null>(null)
@@ -68,6 +67,7 @@ const Stories: React.FC = () => {
   // Ensure video starts on desktop where autoplay can be flaky
   React.useEffect(() => {
     const slide = slidesByStory[currentStory][currentSlide]
+    console.log("slide", slide)
     if (!isOpen || !slide || slide.type !== "video") return
     const v = videoRef.current
     if (!v) return
@@ -239,7 +239,7 @@ const Stories: React.FC = () => {
   return (
     <section className="bg-white border border-gray-200 ">
       <div className="px-3 py-3">
-        <div className="flex sm:gap-4 gap-2 overflow-x-auto no-scrollbar">
+        <div className="flex sm:gap-4  overflow-x-auto no-scrollbar">
           {users.map((user, idx) => (
             <div
               key={user.id}
@@ -307,20 +307,19 @@ const Stories: React.FC = () => {
             ))}
           </div>
 
-          <div className="flex-1 relative flex items-center justify-center p-3">
-            <div className="relative w-[min(92vw,420px)] aspect-9/16 bg-black rounded-xl overflow-hidden centered  shadow-2xl z-20">
+          <div className="flex-1 relative flex items-center justify-center">
+            <div className="relative w-[min(92vw,420px)] aspect-10/16 bg-black rounded-xl overflow-hidden centered  shadow-2xl z-20">
               {/* Media */}
               {(() => {
                 const slide = slidesByStory[currentStory][currentSlide]
                 console.log("slide", slide)
-                console.log("slide.id", slide.id)
                 if (!slide) return null
                 if (slide.type === "video") {
                   return (
                     <video
                       ref={videoRef}
                       src={exampleVideo}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover aspect-square"
                       key={`${currentStory}-${currentSlide}`}
                       autoPlay
                       muted={isMuted}

@@ -9,7 +9,7 @@ import Suggestions from "../components/suggestions"
 const IndexPage: React.FC = () => {
   return (
     <Layout>
-      <div className="max-w-6xl mx-auto sm:px-4 md:px-6 lg:px-8 py-6">
+      <div className="max-w-6xl mx-auto sm:px-4 md:px-6 lg:px-8 sm:py-6">
         <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_340px] gap-8">
           <div className="flex flex-col sm:gap-6">
             <Stories />

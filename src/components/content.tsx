@@ -2,9 +2,19 @@ import * as React from "react"
 import { StaticImage } from "gatsby-plugin-image"
 import { MdFavoriteBorder } from "react-icons/md"
 import { MdFavorite } from "react-icons/md"
-import { IoChatbubbleOutline, IoEllipsisHorizontal } from "react-icons/io5"
+import {
+  IoChatbubbleOutline,
+  IoClose,
+  IoEllipsisHorizontal,
+} from "react-icons/io5"
 import { FiSend } from "react-icons/fi"
-import { FaCopy } from "react-icons/fa"
+import {
+  FaCopy,
+  FaFacebook,
+  FaRegHeart,
+  FaTwitter,
+  FaWhatsapp,
+} from "react-icons/fa"
 import {
   FaRegBookmark,
   FaBookmark,
@@ -12,6 +22,7 @@ import {
   FaShare,
 } from "react-icons/fa"
 import { toast } from "react-toastify"
+import ProfileButton from "./profilebutton"
 
 const Content: React.FC = () => {
   const [posts, setPosts] = React.useState<
@@ -47,13 +58,16 @@ const Content: React.FC = () => {
   }, [])
   const [isLiked, setisLiked] = React.useState(false)
   const [isSaved, setIsSaved] = React.useState(false)
+  const [ShareDialogOpen, setShareDialogOpen] = React.useState(false)
+  const [openDeleteModal, setOpenDeleteModal] = React.useState(false)
   const [openMenuPostId, setOpenMenuPostId] = React.useState<number | null>(
     null
   )
   const menuRef = React.useRef<HTMLDivElement | null>(null)
+  const [isDoubleClicked, setIsDoubleClicked] = React.useState(false)
 
   const toggleLike = () => {
-    setisLiked(!isLiked)
+    setisLiked(prev => !prev)
     // toast.success("Liked")
   }
   const toggleSave = () => {
@@ -91,15 +105,7 @@ const Content: React.FC = () => {
           >
             <header className="px-4 py-3 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-linear-to-tr from-pink-500 to-yellow-500 p-[2px]">
-                  <div className="w-full h-full rounded-full bg-white p-[3px]">
-                    <StaticImage
-                      src="../images/image.png"
-                      className="w-8 h-8 rounded-full object-cover"
-                      alt="suggestion 1"
-                    />
-                  </div>
-                </div>
+                <ProfileButton />
                 <div className="leading-tight">
                   <p className="text-sm font-semibold">{item.userName}</p>
                   <p className="text-[11px] text-gray-500">{item.location}</p>
@@ -126,12 +132,8 @@ const Content: React.FC = () => {
               >
                 <button
                   role="menuitem"
-                  className="w-full px-3 py-2 text-sm flex items-center gap-2 hover:bg-gray-50"
+                  className="w-full px-3 py-2 text-sm flex items-center gap-2 hover:bg-gray-50 focus:outline-none focus:ring-0"
                   onClick={() => {
-                    navigator.clipboard.writeText(window.location.href).then(
-                      // () => toast.success("Link copied"),
-                      () => toast.error("Copy failed")
-                    )
                     setOpenMenuPostId(null)
                   }}
                 >
@@ -142,7 +144,7 @@ const Content: React.FC = () => {
                   role="menuitem"
                   className="w-full px-3 py-2 text-sm flex items-center gap-2 hover:bg-gray-50"
                   onClick={() => {
-                    toast.info("Share dialog coming soon")
+                    setShareDialogOpen(true)
                     setOpenMenuPostId(null)
                   }}
                 >
@@ -153,7 +155,7 @@ const Content: React.FC = () => {
                   role="menuitem"
                   className="w-full px-3 py-2 text-sm text-red-600 flex items-center gap-2 hover:bg-red-50"
                   onClick={() => {
-                    handleDeletePost(item?.id)
+                    setOpenDeleteModal(true)
                     setOpenMenuPostId(null)
                   }}
                 >
@@ -167,7 +169,13 @@ const Content: React.FC = () => {
                 src="../images/image.png"
                 alt="post image"
                 className="w-full h-auto"
+                onDoubleClick={() => setIsDoubleClicked(true)}
               />
+              {isDoubleClicked && (
+                <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                  <FaRegHeart className="w-10 h-10 text-red-700 animate-pulse" />
+                </div>
+              )}
             </div>
             <div className="px-4 py-3">
               <div className="flex items-center justify-between">
@@ -202,6 +210,81 @@ const Content: React.FC = () => {
                 {item.time}
               </p>
             </div>
+            {ShareDialogOpen && (
+              <div className=" fixed inset-0 bg-black/20 z-50 ">
+                <div
+                  className="max-w-[400px] w-full h-fit bg-white rounded-md p-4 shadow-xs absolute 
+                bottom-0 mx-auto
+                sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2"
+                >
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-lg font-semibold">Share</h2>
+                    <button
+                      className="text-gray-700"
+                      onClick={() => setShareDialogOpen(false)}
+                    >
+                      <IoClose className="w-6 h-6 " />
+                    </button>
+                  </div>
+
+                  <p className="text-sm text-gray-500">
+                    Share this post with your friends
+                  </p>
+                  <div className="flex items-center gap-2 mt-4">
+                    <button className="w-10 h-10 rounded-full bg-gray-200">
+                      <FaFacebook className="w-9 h-5 text-blue-500" />
+                    </button>
+                    <button className="w-10 h-10 rounded-full bg-gray-200">
+                      <FaTwitter className="w-9 h-5 text-blue-500" />
+                    </button>
+                    <button className="w-10 h-10 rounded-full bg-gray-200">
+                      {" "}
+                      <FaWhatsapp className="w-9 h-5 text-blue-500" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+            {openDeleteModal && (
+              <div className=" fixed inset-0 bg-black/20 z-50 ">
+                <div
+                  className="max-w-[400px] w-full h-fit bg-white rounded-md p-4 shadow-xs absolute 
+                bottom-0 mx-auto
+                sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2"
+                >
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-lg font-semibold">Delete Post</h2>
+                    <button
+                      className="text-gray-700"
+                      onClick={() => setOpenDeleteModal(false)}
+                    >
+                      <IoClose className="w-6 h-6 " />
+                    </button>
+                  </div>
+
+                  <p className="text-sm text-gray-500">
+                    Are you sure you want to delete this post?
+                  </p>
+                  <div className="flex items-center gap-2 mt-4">
+                    <button
+                      className="w-full bg-red-500 text-white px-4 py-2 rounded-md"
+                      onClick={() => {
+                        handleDeletePost(item?.id)
+                        setOpenDeleteModal(false)
+                      }}
+                    >
+                      Delete
+                    </button>
+                    <button
+                      className="w-full bg-gray-200 text-gray-700 px-4 py-2 rounded-md"
+                      onClick={() => setOpenDeleteModal(false)}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </article>
         )
       })}
