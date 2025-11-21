@@ -3,6 +3,8 @@ import { StaticImage } from "gatsby-plugin-image"
 import { RxCross2 } from "react-icons/rx"
 import { MdNavigateNext, MdNavigateBefore } from "react-icons/md"
 import { IoAdd } from "react-icons/io5"
+import exampleVideo from "../images/videos/example.mp4"
+import { MdVolumeOff, MdVolumeUp, MdPause, MdPlayArrow } from "react-icons/md"
 
 const Stories: React.FC = () => {
   const users = React.useMemo(
@@ -17,15 +19,74 @@ const Stories: React.FC = () => {
     []
   )
 
-  const storyImages = React.useMemo(() => [0, 1, 2, 3, 4, 5], [])
+  const slidesByStory = React.useMemo(
+    () => [
+      [
+        { type: "image", id: "image1" as const },
+        { type: "image", id: "image3" as const },
+        { type: "image", id: "image4" as const },
+        { type: "video", id: "video1" as const },
+      ],
+      [
+        { type: "image", id: "image2" as const },
+        { type: "video", id: "video1" as const },
+        { type: "image", id: "image3" as const },
+        { type: "image", id: "image4" as const },
+      ],
+      [
+        { type: "image", id: "example" as const },
+        { type: "image", id: "image3" as const },
+        { type: "video", id: "video1" as const },
+        { type: "image", id: "image4" as const },
+      ],
+      [{ type: "image", id: "image1" as const }],
+      [{ type: "image", id: "image2" as const }],
+      [{ type: "video", id: "video1" as const }],
+      [{ type: "image", id: "image3" as const }],
+      [{ type: "image", id: "image4" as const }],
+    ],
+    [
+      { type: "image", id: "image3" as const },
+      { type: "video", id: "video1" as const },
+      { type: "image", id: "image4" as const },
+    ]
+  )
 
   const [isOpen, setIsOpen] = React.useState(false)
   const [currentStory, setCurrentStory] = React.useState(0)
+  const [currentSlide, setCurrentSlide] = React.useState(0)
   const [progress, setProgress] = React.useState(0)
   const [rotating, setRotating] = React.useState<Record<number, boolean>>({})
 
   const [angles, setAngles] = React.useState<Record<number, number>>({})
   const [openingIdx, setOpeningIdx] = React.useState<number | null>(null)
+  const videoRef = React.useRef<HTMLVideoElement | null>(null)
+  const imageTimerRef = React.useRef<number | null>(null)
+  const [isMuted, setIsMuted] = React.useState(true)
+  const [isPaused, setIsPaused] = React.useState(false)
+
+  // Ensure video starts on desktop where autoplay can be flaky
+  React.useEffect(() => {
+    const slide = slidesByStory[currentStory][currentSlide]
+    if (!isOpen || !slide || slide.type !== "video") return
+    const v = videoRef.current
+    if (!v) return
+    v.muted = isMuted
+    const tryPlay = async () => {
+      try {
+        await v.play()
+        setIsPaused(false)
+      } catch {
+        setIsPaused(true)
+      }
+    }
+    tryPlay()
+    const onCanPlay = () => tryPlay()
+    v.addEventListener("canplay", onCanPlay, { once: true })
+    return () => {
+      v.removeEventListener("canplay", onCanPlay)
+    }
+  }, [isOpen, currentStory, currentSlide, isMuted])
 
   const handleCircleClick = (idx: number) => {
     if (openingIdx !== null || isOpen) return
@@ -34,34 +95,60 @@ const Stories: React.FC = () => {
   const handleRingEnd = (idx: number) => {
     if (openingIdx === idx) {
       setCurrentStory(idx)
+      setCurrentSlide(0)
       setIsOpen(true)
       setOpeningIdx(null)
     }
   }
 
-  const duration = 10
+  const imageSlideDurationSec = 5
 
   React.useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "auto"
     if (!isOpen) {
       setRotating({})
+      setCurrentSlide(0)
+      setProgress(0)
+      // cleanup
+      if (imageTimerRef.current) {
+        window.clearInterval(imageTimerRef.current)
+        imageTimerRef.current = null
+      }
+      setIsPaused(false)
+      setIsMuted(true)
     }
   }, [isOpen])
 
+  // Manage progress per slide--> that shows the progress fro slides
   React.useEffect(() => {
     if (!isOpen) return
+
+    if (imageTimerRef.current) {
+      window.clearInterval(imageTimerRef.current)
+      imageTimerRef.current = null
+    }
     setProgress(0)
-    const interval = setInterval(() => {
-      setProgress(prev => {
-        if (prev >= 100) {
-          handleNextStory()
-          return 0
+    const slides = slidesByStory[currentStory]
+    const active = slides[currentSlide]
+    if (!active) return
+    if (active.type === "image") {
+      imageTimerRef.current = window.setInterval(() => {
+        setProgress(prev => {
+          if (prev >= 100) {
+            handleNextSlide()
+            return 0
+          }
+          return prev + 100 / (imageSlideDurationSec * 10)
+        })
+      }, 100)
+      return () => {
+        if (imageTimerRef.current) {
+          window.clearInterval(imageTimerRef.current)
+          imageTimerRef.current = null
         }
-        return prev + 100 / (duration * 10)
-      })
-    }, 100)
-    return () => clearInterval(interval)
-  }, [isOpen, currentStory])
+      }
+    }
+  }, [isOpen, currentStory, currentSlide])
 
   // Individual circle rotation effect
   React.useEffect(() => {
@@ -70,7 +157,6 @@ const Stories: React.FC = () => {
     )
     if (!activeUserIds.length) return
 
-    const radius = 50
     const interval = setInterval(() => {
       setAngles(prevAngles => {
         const newAngles = { ...prevAngles }
@@ -85,22 +171,75 @@ const Stories: React.FC = () => {
   }, [rotating])
 
   const handleNextStory = () => {
-    if (currentStory === storyImages.length - 1) {
+    if (currentStory === slidesByStory.length - 1) {
       setIsOpen(false)
       return
     }
     setCurrentStory(prev => prev + 1)
+    setCurrentSlide(0)
+    setProgress(0)
   }
 
   const handlePreviousStory = () => {
     if (currentStory === 0) return
     setCurrentStory(prev => prev - 1)
+    setCurrentSlide(0)
+    setProgress(0)
+  }
+
+  const handleNextSlide = () => {
+    const slides = slidesByStory[currentStory]
+    if (currentSlide < slides.length - 1) {
+      setCurrentSlide(prev => prev + 1)
+      setProgress(0)
+      return
+    }
+    handleNextStory()
+  }
+
+  const goPrev = () => {
+    if (currentSlide > 0) {
+      setCurrentSlide(s => Math.max(0, s - 1))
+      setProgress(0)
+    } else {
+      handlePreviousStory()
+    }
+  }
+  const goNext = () => {
+    const slides = slidesByStory[currentStory] //from the current slide get the all story of this slide
+    if (currentSlide < slides.length - 1) {
+      setCurrentSlide(s => s + 1)
+      setProgress(0)
+    } else {
+      handleNextStory()
+    }
+  }
+
+  const toggleMute = () => {
+    setIsMuted(m => {
+      const next = !m
+      if (videoRef.current) {
+        videoRef.current.muted = next
+      }
+      return next
+    })
+  }
+  const togglePlay = () => {
+    const v = videoRef.current
+    if (!v) return
+    if (v.paused) {
+      v.play()
+      setIsPaused(false)
+    } else {
+      v.pause()
+      setIsPaused(true)
+    }
   }
 
   return (
     <section className="bg-white border border-gray-200 ">
       <div className="px-3 py-3">
-        <div className="flex gap-4 overflow-x-auto no-scrollbar">
+        <div className="flex sm:gap-4 gap-2 overflow-x-auto no-scrollbar">
           {users.map((user, idx) => (
             <div
               key={user.id}
@@ -111,11 +250,9 @@ const Stories: React.FC = () => {
                   className="w-16 h-16 relative cursor-pointer"
                   onClick={() => handleCircleClick(idx)}
                 >
-                  {/* Static gradient ring background (match suggestions width p-[2px]) */}
                   {openingIdx !== idx && (
                     <div className="absolute inset-0 rounded-full p-[2px] bg-linear-to-tr from-pink-500 to-yellow-500" />
                   )}
-
                   {/* Sweep gradient ring overlay with fixed thickness */}
                   {openingIdx === idx && (
                     <div
@@ -130,15 +267,14 @@ const Stories: React.FC = () => {
                     />
                   )}
 
-                  {/* Static inner image */}
-                  <div className="w-full h-full rounded-full bg-white p-[3px] relative z-10">
+                  <div className="w-full h-full rounded-full bg-white p-[3px] relative z-20">
                     <StaticImage
                       src="../images/image.png"
                       className="w-full h-full rounded-full object-cover"
                       alt={user.name}
                     />
                     {user.name === "you" && (
-                      <div className=" absolute bottom-0 right-0 w-5 h-5 rounded-full bg-white p-[3px] z-10">
+                      <div className=" absolute bottom-1 right-1 w-5 h-5 rounded-full bg-white p-[3px] z-40">
                         <IoAdd className="w-full h-full bg-blue-500 text-white rounded-full" />
                       </div>
                     )}
@@ -154,15 +290,15 @@ const Stories: React.FC = () => {
       {isOpen && (
         <div className="fixed inset-0 z-999 bg-black/40 flex flex-col">
           <div className="relative z-10 flex gap-1 px-3">
-            {storyImages.map((_, i) => (
+            {slidesByStory[currentStory].map((_, i) => (
               <div key={i} className="flex-1 h-[2px] rounded">
                 <div
-                  className="h-full bg-white rounded transition-[width] duration-100"
+                  className="h-full bg-white rounded transition-[width] duration-100 hidden"
                   style={{
                     width:
-                      i < currentStory
+                      i < currentSlide
                         ? "100%"
-                        : i === currentStory
+                        : i === currentSlide
                         ? `${progress}%`
                         : "0%",
                   }}
@@ -171,70 +307,158 @@ const Stories: React.FC = () => {
             ))}
           </div>
 
-          <button
-            className="absolute top-4 right-4 z-10 bg-white/30 rounded-full p-2 text-white"
-            onClick={() => setIsOpen(false)}
-          >
-            <RxCross2 className="w-7 h-7" />
-          </button>
+          <div className="flex-1 relative flex items-center justify-center p-3">
+            <div className="relative w-[min(92vw,420px)] aspect-9/16 bg-black rounded-xl overflow-hidden centered  shadow-2xl z-20">
+              {/* Media */}
+              {(() => {
+                const slide = slidesByStory[currentStory][currentSlide]
+                console.log("slide", slide)
+                console.log("slide.id", slide.id)
+                if (!slide) return null
+                if (slide.type === "video") {
+                  return (
+                    <video
+                      ref={videoRef}
+                      src={exampleVideo}
+                      className="w-full h-full object-cover"
+                      key={`${currentStory}-${currentSlide}`}
+                      autoPlay
+                      muted={isMuted}
+                      playsInline
+                      preload="auto"
+                      onTimeUpdate={e => {
+                        const v = e.currentTarget
+                        if (v.duration && isFinite(v.duration)) {
+                          setProgress(
+                            Math.min((v.currentTime / v.duration) * 100, 100)
+                          )
+                        }
+                      }}
+                      onEnded={handleNextSlide}
+                    />
+                  )
+                }
+                // image slide
+                if (slide.id === "image1") {
+                  return (
+                    <StaticImage
+                      src="../images/image3.png"
+                      className="w-full h-full object-cover"
+                      alt="story image"
+                    />
+                  )
+                }
+                if (slide.id === "image2") {
+                  return (
+                    <StaticImage
+                      src="../images/image2.png"
+                      className="w-full h-full object-cover"
+                      alt="story image"
+                    />
+                  )
+                }
+                if (slide.id === "image3") {
+                  return (
+                    <StaticImage
+                      src="../images/image3.png"
+                      className="w-full h-full object-cover"
+                      alt="story image"
+                    />
+                  )
+                }
+                if (slide.id === "image4") {
+                  return (
+                    <StaticImage
+                      src="../images/image4.png"
+                      className="w-full h-full object-cover"
+                      alt="story image"
+                    />
+                  )
+                }
+              })()}
 
-          <div className="flex-1 relative">
-            {currentStory === 0 && (
-              <StaticImage
-                src="../images/image.png"
-                className="w-full h-full object-cover"
-                alt="story 1"
-              />
-            )}
-            {currentStory === 1 && (
-              <StaticImage
-                src="../images/image2.png"
-                className="w-full h-full object-cover"
-                alt="story 2"
-              />
-            )}
-            {currentStory === 2 && (
-              <StaticImage
-                src="../images/example.png"
-                className="w-full h-full object-cover"
-                alt="story 3"
-              />
-            )}
-            {currentStory === 3 && (
-              <StaticImage
-                src="../images/image.png"
-                className="w-full h-full object-cover"
-                alt="story 4"
-              />
-            )}
-            {currentStory === 4 && (
-              <StaticImage
-                src="../images/image2.png"
-                className="w-full h-full object-cover"
-                alt="story 5"
-              />
-            )}
-            {currentStory === 5 && (
-              <StaticImage
-                src="../images/example.png"
-                className="w-full h-full object-cover"
-                alt="story 6"
-              />
-            )}
+              {/* In-card progress bar */}
+              <div className="absolute top-0 left-0 right-0 z-10 flex gap-1 p-2">
+                {slidesByStory[currentStory].map((_, i) => (
+                  <div key={i} className="flex-1 h-[2px] rounded">
+                    <div
+                      className="h-full bg-white rounded transition-[width] duration-100"
+                      style={{
+                        width:
+                          i < currentSlide
+                            ? "100%"
+                            : i === currentSlide
+                            ? `${progress}%`
+                            : "0%",
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
 
-            <button
-              className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/30 rounded-full p-2"
-              onClick={handlePreviousStory}
-            >
-              <MdNavigateBefore className="w-7 h-7" />
-            </button>
+              {/* Top/bottom gradient overlays */}
+              <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-linear-to-b from-black/40 to-transparent" />
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-linear-to-t from-black/40 to-transparent" />
 
-            <button
-              className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/30 rounded-full p-2"
-              onClick={handleNextStory}
-            >
-              <MdNavigateNext className="w-7 h-7" />
-            </button>
+              {/* Tap zones (mobile) */}
+              <button
+                className="sm:hidden absolute inset-y-0 left-0 w-1/2"
+                onClick={goPrev}
+                aria-label="Previous"
+              />
+              <button
+                className="sm:hidden absolute inset-y-0 right-0 w-1/2"
+                onClick={goNext}
+                aria-label="Next"
+              />
+
+              <button
+                className="absolute top-4 right-4 z-10 bg-white/30 rounded-full p-2 text-white"
+                onClick={() => setIsOpen(false)}
+              >
+                <RxCross2 className="w-7 h-7" />
+              </button>
+
+              {/* Controls */}
+              <div className="absolute bottom-3 right-3 z-10 flex items-center gap-2">
+                <button
+                  className="bg-white/30 text-white rounded-full p-2"
+                  onClick={toggleMute}
+                  aria-label={isMuted ? "Unmute" : "Mute"}
+                >
+                  {isMuted ? (
+                    <MdVolumeOff className="w-6 h-6" />
+                  ) : (
+                    <MdVolumeUp className="w-6 h-6" />
+                  )}
+                </button>
+                <button
+                  className="bg-white/30 text-white rounded-full p-2"
+                  onClick={togglePlay}
+                  aria-label={isPaused ? "Play" : "Pause"}
+                >
+                  {isPaused ? (
+                    <MdPlayArrow className="w-6 h-6" />
+                  ) : (
+                    <MdPause className="w-6 h-6" />
+                  )}
+                </button>
+              </div>
+
+              {/* Desktop arrows */}
+              <button
+                className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/30 rounded-full p-2 sm:block hidden"
+                onClick={goPrev}
+              >
+                <MdNavigateBefore className="w-7 h-7" />
+              </button>
+              <button
+                className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/30 rounded-full p-2 sm:block hidden"
+                onClick={goNext}
+              >
+                <MdNavigateNext className="w-7 h-7" />
+              </button>
+            </div>
           </div>
         </div>
       )}

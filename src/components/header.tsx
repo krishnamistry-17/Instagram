@@ -29,11 +29,14 @@ const Header: React.FC = () => {
   return (
     <header className="bg-white border-b border-gray-200 shadow-xs">
       <div className="mx-auto px-6 py-4 flex items-center justify-between">
-        <h1 className="text-lg font-semibold">
-          <Link to="/" className=" no-underline hover:opacity-80">
-            Instagram
-          </Link>
-        </h1>
+        <Link to="/">
+          {" "}
+          <StaticImage
+            src="../images/logo.png"
+            className="w-8 h-8 "
+            alt="logo"
+          />
+        </Link>
         <div className="relative w-56 md:w-72 h-9 flex items-center justify-center">
           <div
             className={`w-full h-full border border-gray-200 rounded-md px-3 flex items-center transition-opacity duration-200 ${

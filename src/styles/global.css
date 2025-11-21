@@ -19,7 +19,7 @@
   inset: 0;
   border-radius: 9999px;
   background: conic-gradient(#ec4899, #f97316, #ec4899);
-  z-index: 20;
+  z-index: 30;
   /* Show only the outer ring stroke using a radial mask */
   -webkit-mask: radial-gradient(
     farthest-side,
