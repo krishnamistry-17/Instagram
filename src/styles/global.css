@@ -1,7 +1,5 @@
 @import "tailwindcss";
 
-
-
 .story-ring {
   animation: ring-spin 1s linear forwards;
 }
@@ -20,7 +18,11 @@
   position: absolute;
   inset: 0;
   border-radius: 9999px;
-  background: conic-gradient(#ec4899, #f97316, #ec4848);
+  background: conic-gradient( #ff0050,
+  #ff6f00,
+  #ffd500,
+  #ff00c8,
+  #ff0050);
   z-index: 30;
   -webkit-mask: radial-gradient(
     farthest-side,

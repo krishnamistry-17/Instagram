@@ -2,8 +2,8 @@ import { StaticImage } from "gatsby-plugin-image"
 import * as React from "react"
 import ProfileButton from "./profilebutton"
 
-const Suggestions: React.FC = () => {
-  const suggestions = React.useMemo(
+const Friends: React.FC = () => {
+  const friends = React.useMemo(
     () => [
       { id: 1, name: "alice", detail: "Followed by alice" },
       { id: 2, name: "carol", detail: "New to Instagram" },
@@ -16,18 +16,18 @@ const Suggestions: React.FC = () => {
   )
 
   return (
-    <section >
+    <section className="">
       <div className="bg-white border border-gray-200 rounded-md md:rounded-xl shadow-sm overflow-hidden">
         <div className="px-4 py-3 flex items-center justify-between">
           <p className="text-sm font-semibold text-transparent bg-clip-text bg-linear-to-r from-fuchsia-600 to-amber-600">
-            Suggestions for you
+            Your Friends
           </p>
           <button className="text-xs font-semibold text-blue-600 hover:underline">
             See all
           </button>
         </div>
         <ul className="px-2 py-1 divide-y divide-gray-100">
-          {suggestions.map(s => (
+          {friends.map(s => (
             <li key={s.id} className="first:pt-0 last:pb-0">
               <div className="px-2 py-2 flex items-center justify-between hover:bg-gray-50 rounded-md">
                 <div className="flex items-center gap-3">
@@ -49,4 +49,4 @@ const Suggestions: React.FC = () => {
   )
 }
 
-export default Suggestions
+export default Friends

@@ -20,6 +20,11 @@ const Stories: React.FC = () => {
       { id: 5, name: "dave" },
       { id: 6, name: "eve" },
       { id: 7, name: "jack" },
+      { id: 8, name: "lily" },
+      { id: 9, name: "lucy" },
+      { id: 10, name: "mary" },
+      { id: 11, name: "nina" },
+      { id: 12, name: "olive" },
     ],
     []
   )
@@ -192,6 +197,51 @@ const Stories: React.FC = () => {
       )
     }
     if (name === "jack") {
+      return (
+        <StaticImage
+          src="../images/image6.png"
+          className="w-full h-full rounded-full object-cover"
+          alt={name}
+        />
+      )
+    }
+    if (name === "lily") {
+      return (
+        <StaticImage
+          src="../images/image7.png"
+          className="w-full h-full rounded-full object-cover"
+          alt={name}
+        />
+      )
+    }
+    if (name === "lucy") {
+      return (
+        <StaticImage
+          src="../images/image8.png"
+          className="w-full h-full rounded-full object-cover"
+          alt={name}
+        />
+      )
+    }
+    if (name === "mary") {
+      return (
+        <StaticImage
+          src="../images/image9.png"
+          className="w-full h-full rounded-full object-cover"
+          alt={name}
+        />
+      )
+    }
+    if (name === "nina") {
+      return (
+        <StaticImage
+          src="../images/image10.png"
+          className="w-full h-full rounded-full object-cover"
+          alt={name}
+        />
+      )
+    }
+    if (name === "olive") {
       return (
         <StaticImage
           src="../images/image6.png"
@@ -566,7 +616,8 @@ const Stories: React.FC = () => {
                     onClick={() => setIsCountOpen(false)}
                     aria-label="Close viewers"
                   />
-                  <div className="absolute bottom-3 left-2 z-30 py-4 bg-white text-gray-900 rounded-lg shadow-xl w-[min(94%,400px)]">
+
+                  <div className="absolute bottom-2 left-2 z-30 py-2 h-[230px] bg-white text-gray-900 rounded-lg shadow-xl w-[min(94%,400px)]">
                     <div className="flex items-center justify-between px-3 py-2 shadow-sm bg-white">
                       <div className="flex items-center gap-2">
                         <IoEye className="w-5 h-5" />

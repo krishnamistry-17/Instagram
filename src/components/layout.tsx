@@ -32,7 +32,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <>
       <Header />
-      <div>
+      <div className="relative min-h-screen">
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 -z-10 bg-linear-to-b from-fuchsia-50 via-rose-50 to-amber-50"
+        />
         <ToastContainer />
         <main>{children}</main>
         {/* <footer>

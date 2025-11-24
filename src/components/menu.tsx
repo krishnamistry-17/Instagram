@@ -53,7 +53,7 @@ const Menu: React.FC<{
         aria-modal="true"
         className="fixed top-0 right-0 h-full w-80 bg-white border-l border-gray-200 z-50 shadow-xl transform transition-transform duration-300 translate-x-0"
       >
-        <div className="flex items-center justify-between px-5 py-4 border-b">
+        <div className="flex items-center justify-between px-5 py-4 border-b bg-linear-to-r from-fuchsia-600 via-rose-500 to-amber-400 text-white">
           <div
             className="flex items-center gap-3 cursor-pointer"
             onClick={() => navigate("/profile")}
@@ -61,19 +61,19 @@ const Menu: React.FC<{
             <ProfileButton name="you" />
             <div className="leading-tight">
               <p className="text-md font-semibold">alice</p>
-              <p className="text-xs text-gray-500">@alice</p>
+              <p className="text-xs text-white/80">@alice</p>
             </div>
           </div>
           <button
             type="button"
             aria-label="Close"
             onClick={() => setIsMenuOpen(false)}
-            className="p-1 rounded hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-300"
+            className="p-1 rounded hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/40"
           >
-            <RxCross2 className="text-xl" />
+            <RxCross2 className="text-xl text-white" />
           </button>
         </div>
-        <div className="flex items-center justify-between px-5 py-4 border-b">
+        <div className="flex items-center justify-between px-5 py-4 border-b bg-white text-black">
           <div className="flex flex-col gap-2 items-center">
             <p className="text-md font-semibold">5</p>
             <p className="text-xs  font-semibold">Posts</p>
@@ -92,11 +92,13 @@ const Menu: React.FC<{
             {details.map(item => (
               <li key={item.id}>
                 <button
-                  className="flex items-center gap-2 hover:bg-gray-100 rounded-md p-2"
+                  className="flex items-center gap-2 hover:bg-rose-50 rounded-md p-2"
                   onClick={item.onClick}
                 >
-                  <item.icon className="w-5 h-5" />
-                  <span>{item.label}</span>
+                  <item.icon className="w-5 h-5 text-fuchsia-600" />
+                  <span className="font-medium text-gray-800">
+                    {item.label}
+                  </span>
                 </button>
               </li>
             ))}

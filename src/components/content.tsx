@@ -146,8 +146,9 @@ const Content: React.FC = () => {
         return (
           <article
             key={item.id}
-            className="bg-white/80 border border-gray-200/70 rounded-md md:rounded-xl shadow-sm hover:shadow-md transition-shadow relative"
+            className="bg-white/90 border border-gray-100 rounded-md md:rounded-xl shadow-sm hover:shadow-md transition-shadow relative"
           >
+            <div className="h-1 w-full bg-linear-to-r from-fuchsia-500 via-sky-500 to-amber-400 rounded-t-md md:rounded-t-xl" />
             <header className="px-4 py-3 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <ProfileButton name={item?.userName} size="lg" />
