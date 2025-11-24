@@ -58,10 +58,10 @@ const Menu: React.FC<{
             className="flex items-center gap-3 cursor-pointer"
             onClick={() => navigate("/profile")}
           >
-            <ProfileButton />
+            <ProfileButton name="you" />
             <div className="leading-tight">
-              <p className="text-md font-semibold">John Doe</p>
-              <p className="text-xs text-gray-500">@johndoe</p>
+              <p className="text-md font-semibold">alice</p>
+              <p className="text-xs text-gray-500">@alice</p>
             </div>
           </div>
           <button

@@ -21,7 +21,7 @@ import {
   FaRegTrashAlt,
   FaShare,
 } from "react-icons/fa"
-import { toast } from "react-toastify"
+// import { toast } from "react-toastify"
 import ProfileButton from "./profilebutton"
 
 const Content: React.FC = () => {
@@ -53,6 +53,14 @@ const Content: React.FC = () => {
         likes: 89,
         caption: "Coffee and code",
         time: "6 hours ago",
+      },
+      {
+        id: 3,
+        userName: "carol",
+        location: "Los Angeles, CA",
+        likes: 56,
+        caption: "A beautiful day in the park",
+        time: "12 hours ago",
       },
     ])
   }, [])
@@ -95,6 +103,43 @@ const Content: React.FC = () => {
     return () => document.removeEventListener("mousedown", onClickOutside)
   }, [openMenuPostId])
 
+  const postImages = (userName: string) => {
+    if (userName === "alice") {
+      return (
+        <StaticImage
+          src="../images/image2.png"
+          alt="post image"
+          className="w-full h-auto"
+        />
+      )
+    }
+    if (userName === "bob") {
+      return (
+        <StaticImage
+          src="../images/image3.png"
+          alt="post image"
+          className="w-full h-auto"
+        />
+      )
+    }
+    if (userName === "carol") {
+      return (
+        <StaticImage
+          src="../images/image4.png"
+          alt="post image"
+          className="w-full h-auto"
+        />
+      )
+    }
+    return (
+      <StaticImage
+        src="../images/image1.png"
+        alt="post image"
+        className="w-full h-auto"
+      />
+    )
+  }
+
   return (
     <section className="flex flex-col gap-6">
       {posts?.map(item => {
@@ -105,7 +150,7 @@ const Content: React.FC = () => {
           >
             <header className="px-4 py-3 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <ProfileButton />
+                <ProfileButton name={item?.userName} />
                 <div className="leading-tight">
                   <p className="text-sm font-semibold">{item.userName}</p>
                   <p className="text-[11px] text-gray-500">{item.location}</p>
@@ -165,12 +210,7 @@ const Content: React.FC = () => {
               </div>
             )}
             <div className="bg-black/5">
-              <StaticImage
-                src="../images/image.png"
-                alt="post image"
-                className="w-full h-auto"
-                onDoubleClick={() => setIsDoubleClicked(true)}
-              />
+              {postImages(item?.userName)}
               {isDoubleClicked && (
                 <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
                   <FaRegHeart className="w-10 h-10 text-red-700 animate-pulse" />

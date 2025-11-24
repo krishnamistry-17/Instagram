@@ -7,8 +7,8 @@ import Posts from "../components/posts"
 
 const ProfilePage: React.FC = () => {
   const [user, setUser] = React.useState({
-    name: "John Doe",
-    username: "@johndoe",
+    name: "alice",
+    username: "@alice",
     bio: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.",
     profilePicture: "../images/image.png",
     coverPicture: "../images/image.png",
@@ -25,12 +25,12 @@ const ProfilePage: React.FC = () => {
             <div className="w-13 h-13 rounded-full bg-linear-to-tr from-pink-500 to-yellow-500 p-px">
               <div className="w-full h-full rounded-full bg-white p-[3px]">
                 <StaticImage
-                  src="../images/image.png"
+                  src="../images/image7.png"
                   className="w-11 h-11 rounded-full object-cover"
                   alt="suggestion 1"
                 />
               </div>
-            </div>
+            </div>  
 
             <div className="flex flex-col items-center justify-center py-2">
               <p className="sm:text-2xl text-md font-bold">{user.name}</p>

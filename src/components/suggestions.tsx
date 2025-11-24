@@ -5,10 +5,12 @@ import ProfileButton from "./profilebutton"
 const Suggestions: React.FC = () => {
   const suggestions = React.useMemo(
     () => [
-      { id: 1, name: "Lisa", detail: "Followed by alice" },
-      { id: 2, name: "Code", detail: "New to Instagram" },
-      { id: 3, name: "erin", detail: "Followed by bob" },
-      { id: 4, name: "frank", detail: "Suggested for you" },
+      { id: 1, name: "alice", detail: "Followed by alice" },
+      { id: 2, name: "carol", detail: "New to Instagram" },
+      { id: 3, name: "bob", detail: "Followed by bob" },
+      { id: 4, name: "carol", detail: "Suggested for you" },
+      { id: 5, name: "dave", detail: "Suggested for you" },
+      { id: 6, name: "eve", detail: "Suggested for you" },
     ],
     []
   )
@@ -29,7 +31,7 @@ const Suggestions: React.FC = () => {
               className="px-2 py-2 flex items-center justify-between hover:bg-gray-50 rounded"
             >
               <div className="flex items-center gap-3">
-                <ProfileButton />
+                <ProfileButton name={s.name} />
 
                 <div className="leading-tight">
                   <p className="text-sm font-semibold">{s.name}</p>

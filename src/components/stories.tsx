@@ -8,7 +8,7 @@ import { MdVolumeOff, MdVolumeUp, MdPause, MdPlayArrow } from "react-icons/md"
 import { IoEye } from "react-icons/io5"
 import ProfileButton from "./profilebutton"
 import { BiSolidShare } from "react-icons/bi"
-import { FaUser } from "react-icons/fa"
+// import { FaUser } from "react-icons/fa"
 
 const Stories: React.FC = () => {
   const users = React.useMemo(
@@ -123,12 +123,11 @@ const Stories: React.FC = () => {
     }
   }, [isOpen])
 
-  // Avatar renderer per user (StaticImage requires literal src)
   const renderAvatar = (name: string) => {
     if (name === "you") {
       return (
         <StaticImage
-          src="../images/image.png"
+          src="../images/image5.png"
           className="w-full h-full rounded-full object-cover"
           alt={name}
         />
@@ -137,7 +136,7 @@ const Stories: React.FC = () => {
     if (name === "alice") {
       return (
         <StaticImage
-          src="../images/image2.png"
+          src="../images/image7.png"
           className="w-full h-full rounded-full object-cover"
           alt={name}
         />
@@ -146,7 +145,7 @@ const Stories: React.FC = () => {
     if (name === "bob") {
       return (
         <StaticImage
-          src="../images/example.png"
+          src="../images/image6.png"
           className="w-full h-full rounded-full object-cover"
           alt={name}
         />
@@ -155,7 +154,7 @@ const Stories: React.FC = () => {
     if (name === "carol") {
       return (
         <StaticImage
-          src="../images/image3.png"
+          src="../images/image8.png"
           className="w-full h-full rounded-full object-cover"
           alt={name}
         />
@@ -164,7 +163,7 @@ const Stories: React.FC = () => {
     if (name === "dave") {
       return (
         <StaticImage
-          src="../images/image4.png"
+          src="../images/image9.png"
           className="w-full h-full rounded-full object-cover"
           alt={name}
         />
@@ -174,15 +173,15 @@ const Stories: React.FC = () => {
     if (name === "eve") {
       return (
         <StaticImage
-          src="../images/image.png"
+          src="../images/image10.png"
           className="w-full h-full rounded-full object-cover"
           alt={name}
         />
       )
     }
-    if (name === "you") {
-      return <FaUser className="w-full h-full rounded-full object-cover" />
-    }
+    // if (name === "you") {
+    //   return <FaUser className="w-full h-full rounded-full object-cover" />
+    // }
   }
 
   // Manage progress per slide--> that shows the progress fro slides
@@ -338,7 +337,6 @@ const Stories: React.FC = () => {
                       onAnimationEnd={() => handleRingEnd(idx)}
                     />
                   )}
-
                   <div className="w-full h-full rounded-full bg-white p-[3px] relative z-20">
                     {renderAvatar(user.name)}
                     {user.name === "you" && (
@@ -566,7 +564,7 @@ const Stories: React.FC = () => {
                       {users?.map((user: { id: number; name: string }) => (
                         <div className="flex items-center justify-between gap-2 py-1">
                           <div className="flex items-center gap-2">
-                            <ProfileButton />
+                            <ProfileButton name={user?.name} />
                             <p className="text-sm">{user?.name}</p>
                           </div>
                           <div className="flex items-center gap-3 text-gray-500">
