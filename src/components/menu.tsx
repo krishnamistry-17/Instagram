@@ -18,7 +18,9 @@ const Menu: React.FC<{
   React.useEffect(() => {
     if (!isMenuOpen) return
     const onKeyDown = (e: KeyboardEvent) => {
+      e.stopPropagation()
       if (e.key === "Escape") {
+        e.preventDefault()
         setIsMenuOpen(false)
       }
     }
@@ -51,7 +53,7 @@ const Menu: React.FC<{
       <aside
         role="dialog"
         aria-modal="true"
-        className="fixed top-0 right-0 h-full w-80 bg-white border-l border-gray-200 z-50 shadow-xl transform transition-transform duration-300 translate-x-0"
+        className="fixed top-0 right-0 h-full w-80 bg-white  z-50 shadow-xl transform transition-transform duration-300 translate-x-0"
       >
         <div className="flex items-center justify-between px-5 py-4 border-b bg-linear-to-r from-fuchsia-600 via-rose-500 to-amber-400 text-white">
           <div

@@ -7,10 +7,6 @@ const Friends: React.FC = () => {
     () => [
       { id: 1, name: "alice", detail: "Followed by alice" },
       { id: 2, name: "carol", detail: "New to Instagram" },
-      { id: 3, name: "bob", detail: "Followed by bob" },
-      { id: 4, name: "carol", detail: "Suggested for you" },
-      { id: 5, name: "dave", detail: "Suggested for you" },
-      { id: 6, name: "eve", detail: "Suggested for you" },
     ],
     []
   )

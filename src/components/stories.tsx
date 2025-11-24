@@ -8,7 +8,6 @@ import { MdVolumeOff, MdVolumeUp, MdPause, MdPlayArrow } from "react-icons/md"
 import { IoEye } from "react-icons/io5"
 import ProfileButton from "./profilebutton"
 import { BiSolidShare } from "react-icons/bi"
-// import { FaUser } from "react-icons/fa"
 
 const Stories: React.FC = () => {
   const users = React.useMemo(
@@ -56,13 +55,16 @@ const Stories: React.FC = () => {
       [{ type: "video", id: "video1" as const }],
       [{ type: "image", id: "image3" as const }],
       [{ type: "image", id: "image4" as const }],
+      [
+        { type: "image", id: "image5" as const },
+        { type: "image", id: "image6" as const },
+        { type: "image", id: "image7" as const },
+      ],
+      [{ type: "image", id: "image8" as const }],
+      [{ type: "image", id: "image9" as const }],
+      [{ type: "image", id: "image10" as const }],
     ],
-    [
-      { type: "image", id: "image3" as const },
-      { type: "video", id: "video1" as const },
-      { type: "image", id: "image4" as const },
-      { type: "image", id: "image5" as const },
-    ]
+    []
   )
 
   const [isOpen, setIsOpen] = React.useState(false)
@@ -78,7 +80,57 @@ const Stories: React.FC = () => {
   const [isMuted, setIsMuted] = React.useState(true)
   const [isPaused, setIsPaused] = React.useState(false)
 
-  //control visibility
+  const [panelHeight, setPanelHeight] = React.useState(230)
+  const MIN_HEIGHT = 230
+  const MAX_HEIGHT = 400
+  const [dragStartY, setDragStartY] = React.useState<number | null>(null)
+  const [startHeight, setStartHeight] = React.useState<number>(MIN_HEIGHT)
+
+  const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
+    e.stopPropagation()
+    if (typeof e.preventDefault === "function") e.preventDefault()
+    const clientY =
+      "touches" in e
+        ? (e as React.TouchEvent).touches[0].clientY
+        : (e as React.MouseEvent).clientY
+    setDragStartY(clientY)
+    setStartHeight(panelHeight)
+  }
+
+  const handleDragMove = (e: React.MouseEvent | React.TouchEvent) => {
+    e.stopPropagation()
+
+    if (typeof e.preventDefault === "function") e.preventDefault()
+    if (dragStartY === null) return
+
+    const clientY =
+      "touches" in e
+        ? (e as React.TouchEvent).touches[0].clientY
+        : (e as React.MouseEvent).clientY
+    const delta = dragStartY - clientY
+
+    let newHeight = startHeight + delta
+
+    if (newHeight < MIN_HEIGHT) newHeight = MIN_HEIGHT
+    if (newHeight > MAX_HEIGHT) newHeight = MAX_HEIGHT
+
+    setPanelHeight(newHeight)
+  }
+
+  const handleDragEnd = (e?: React.MouseEvent | React.TouchEvent) => {
+    if (e) {
+      e.stopPropagation()
+      if (typeof e.preventDefault === "function") e.preventDefault()
+    }
+    if (panelHeight > MIN_HEIGHT + (MAX_HEIGHT - MIN_HEIGHT) * 0.4) {
+      setPanelHeight(MAX_HEIGHT)
+    } else {
+      setPanelHeight(MIN_HEIGHT)
+    }
+
+    setDragStartY(null)
+  }
+
   React.useEffect(() => {
     if (!isOpen) return
     const slide = slidesByStory[currentStory][currentSlide]
@@ -87,7 +139,6 @@ const Stories: React.FC = () => {
     setIsVideo(slide.type === "video")
   }, [isOpen, currentStory, currentSlide, slidesByStory])
 
-  // Ensure video starts on desktop where autoplay can be flaky
   React.useEffect(() => {
     const slide = slidesByStory[currentStory][currentSlide]
     if (!isOpen || !slide || slide.type !== "video") return
@@ -131,7 +182,6 @@ const Stories: React.FC = () => {
       setRotating({})
       setCurrentSlide(0)
       setProgress(0)
-      // cleanup
       if (imageTimerRef.current) {
         window.clearInterval(imageTimerRef.current)
         imageTimerRef.current = null
@@ -352,11 +402,6 @@ const Stories: React.FC = () => {
     }
   }
 
-  const handleScrollUp = () => {
-    console.log("scroll up")
-    setIsCountOpen(true)
-  }
-
   const toggleMute = () => {
     setIsMuted(m => {
       const next = !m
@@ -366,6 +411,7 @@ const Stories: React.FC = () => {
       return next
     })
   }
+
   const togglePlay = () => {
     const v = videoRef.current
     if (!v) return
@@ -475,7 +521,7 @@ const Stories: React.FC = () => {
                   )
                 }
                 // image slide
-                if (slide.id === "image1") {
+                if (slide.type === "image" && slide.id === "image1") {
                   return (
                     <StaticImage
                       src="../images/image3.png"
@@ -484,7 +530,7 @@ const Stories: React.FC = () => {
                     />
                   )
                 }
-                if (slide.id === "image2") {
+                if (slide.type === "image" && slide.id === "image2") {
                   return (
                     <StaticImage
                       src="../images/image2.png"
@@ -493,7 +539,7 @@ const Stories: React.FC = () => {
                     />
                   )
                 }
-                if (slide.id === "image3") {
+                if (slide.type === "image" && slide.id === "image3") {
                   return (
                     <StaticImage
                       src="../images/image3.png"
@@ -502,10 +548,64 @@ const Stories: React.FC = () => {
                     />
                   )
                 }
-                if (slide.id === "image4") {
+                if (slide.type === "image" && slide.id === "image4") {
                   return (
                     <StaticImage
                       src="../images/image4.png"
+                      className="w-full h-full object-cover"
+                      alt="story image"
+                    />
+                  )
+                }
+                if (slide.type === "image" && slide.id === "image5") {
+                  return (
+                    <StaticImage
+                      src="../images/image5.png"
+                      className="w-full h-full object-cover"
+                      alt="story image"
+                    />
+                  )
+                }
+                if (slide.type === "image" && slide.id === "image6") {
+                  return (
+                    <StaticImage
+                      src="../images/image6.png"
+                      className="w-full h-full object-cover"
+                      alt="story image"
+                    />
+                  )
+                }
+                if (slide.type === "image" && slide.id === "image7") {
+                  return (
+                    <StaticImage
+                      src="../images/image7.png"
+                      className="w-full h-full object-cover"
+                      alt="story image"
+                    />
+                  )
+                }
+                if (slide.type === "image" && slide.id === "image8") {
+                  return (
+                    <StaticImage
+                      src="../images/image8.png"
+                      className="w-full h-full object-cover"
+                      alt="story image"
+                    />
+                  )
+                }
+                if (slide.type === "image" && slide.id === "image9") {
+                  return (
+                    <StaticImage
+                      src="../images/image9.png"
+                      className="w-full h-full object-cover"
+                      alt="story image"
+                    />
+                  )
+                }
+                if (slide.type === "image" && slide.id === "image10") {
+                  return (
+                    <StaticImage
+                      src="../images/image10.png"
                       className="w-full h-full object-cover"
                       alt="story image"
                     />
@@ -603,7 +703,6 @@ const Stories: React.FC = () => {
               <button
                 className="absolute bottom-3 left-3 z-10 bg-white/30 text-white text-xs p-2 rounded-full backdrop-blur-sm flex items-center gap-1"
                 onClick={() => setIsCountOpen(prev => !prev)}
-                onScroll={handleScrollUp}
                 aria-label="Viewers"
               >
                 <IoEye className="w-4 h-4" />
@@ -617,7 +716,26 @@ const Stories: React.FC = () => {
                     aria-label="Close viewers"
                   />
 
-                  <div className="absolute bottom-2 left-2 z-30 py-2 h-[230px] bg-white text-gray-900 rounded-lg shadow-xl w-[min(94%,400px)]">
+                  <div
+                    className="absolute bottom-0 left-2 z-30 bg-white text-gray-900 rounded-xl shadow-xl w-[min(94%,400px)]"
+                    style={{
+                      height: `${panelHeight}px`,
+                      transition: dragStartY ? "none" : "height 0.25s ease",
+                    }}
+                  >
+                    <div
+                      className="w-full flex justify-center py-2 cursor-grab"
+                      onMouseDown={handleDragStart}
+                      onTouchStart={handleDragStart}
+                      onMouseMove={handleDragMove}
+                      onMouseUp={handleDragEnd}
+                      onTouchMove={handleDragMove}
+                      onTouchEnd={handleDragEnd}
+                      style={{ touchAction: "none" }}
+                    >
+                      <div className="w-10 h-1.5 bg-gray-300 rounded-full"></div>
+                    </div>
+
                     <div className="flex items-center justify-between px-3 py-2 shadow-sm bg-white">
                       <div className="flex items-center gap-2">
                         <IoEye className="w-5 h-5" />
@@ -635,10 +753,14 @@ const Stories: React.FC = () => {
                         </button>
                       </div>
                     </div>
-                    <div className="max-h-40 overflow-auto px-3 py-2 no-scrollbar">
+
+                    <div className="overflow-auto px-3 pb-4 pt-2 h-[calc(100%-60px)]">
                       <p className="text-sm font-semibold py-2">Viewers</p>
-                      {users?.map((user: { id: number; name: string }) => (
-                        <div className="flex items-center justify-between gap-2 py-1">
+                      {users?.map(user => (
+                        <div
+                          key={user?.id}
+                          className="flex items-center justify-between gap-2 py-1"
+                        >
                           <div className="flex items-center gap-2">
                             <ProfileButton name={user?.name} />
                             <p className="text-sm">{user?.name}</p>
