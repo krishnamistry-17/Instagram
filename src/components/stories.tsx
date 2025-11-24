@@ -1,10 +1,14 @@
 import * as React from "react"
 import { StaticImage } from "gatsby-plugin-image"
 import { RxCross2 } from "react-icons/rx"
-import { MdNavigateNext, MdNavigateBefore } from "react-icons/md"
-import { IoAdd } from "react-icons/io5"
+import { MdNavigateNext, MdNavigateBefore, MdDelete } from "react-icons/md"
+import { IoAdd, IoDownloadOutline, IoEllipsisVertical } from "react-icons/io5"
 import exampleVideo from "../images/videos/example.mp4"
 import { MdVolumeOff, MdVolumeUp, MdPause, MdPlayArrow } from "react-icons/md"
+import { IoEye } from "react-icons/io5"
+import ProfileButton from "./profilebutton"
+import { BiSolidShare } from "react-icons/bi"
+import { FaUser } from "react-icons/fa"
 
 const Stories: React.FC = () => {
   const users = React.useMemo(
@@ -53,6 +57,7 @@ const Stories: React.FC = () => {
   )
 
   const [isOpen, setIsOpen] = React.useState(false)
+  const [isCountOpen, setIsCountOpen] = React.useState(false)
   const [currentStory, setCurrentStory] = React.useState(0)
   const [currentSlide, setCurrentSlide] = React.useState(0)
   const [progress, setProgress] = React.useState(0)
@@ -67,7 +72,6 @@ const Stories: React.FC = () => {
   // Ensure video starts on desktop where autoplay can be flaky
   React.useEffect(() => {
     const slide = slidesByStory[currentStory][currentSlide]
-    console.log("slide", slide)
     if (!isOpen || !slide || slide.type !== "video") return
     const v = videoRef.current
     if (!v) return
@@ -118,6 +122,68 @@ const Stories: React.FC = () => {
       setIsMuted(true)
     }
   }, [isOpen])
+
+  // Avatar renderer per user (StaticImage requires literal src)
+  const renderAvatar = (name: string) => {
+    if (name === "you") {
+      return (
+        <StaticImage
+          src="../images/image.png"
+          className="w-full h-full rounded-full object-cover"
+          alt={name}
+        />
+      )
+    }
+    if (name === "alice") {
+      return (
+        <StaticImage
+          src="../images/image2.png"
+          className="w-full h-full rounded-full object-cover"
+          alt={name}
+        />
+      )
+    }
+    if (name === "bob") {
+      return (
+        <StaticImage
+          src="../images/example.png"
+          className="w-full h-full rounded-full object-cover"
+          alt={name}
+        />
+      )
+    }
+    if (name === "carol") {
+      return (
+        <StaticImage
+          src="../images/image3.png"
+          className="w-full h-full rounded-full object-cover"
+          alt={name}
+        />
+      )
+    }
+    if (name === "dave") {
+      return (
+        <StaticImage
+          src="../images/image4.png"
+          className="w-full h-full rounded-full object-cover"
+          alt={name}
+        />
+      )
+    }
+
+    if (name === "eve") {
+      return (
+        <StaticImage
+          src="../images/image.png"
+          className="w-full h-full rounded-full object-cover"
+          alt={name}
+        />
+      )
+    }
+    if (name === "you") {
+      return <FaUser className="w-full h-full rounded-full object-cover" />
+    }
+  }
 
   // Manage progress per slide--> that shows the progress fro slides
   React.useEffect(() => {
@@ -205,6 +271,7 @@ const Stories: React.FC = () => {
       handlePreviousStory()
     }
   }
+
   const goNext = () => {
     const slides = slidesByStory[currentStory] //from the current slide get the all story of this slide
     if (currentSlide < slides.length - 1) {
@@ -213,6 +280,11 @@ const Stories: React.FC = () => {
     } else {
       handleNextStory()
     }
+  }
+
+  const handleScrollUp = () => {
+    console.log("scroll up")
+    setIsCountOpen(true)
   }
 
   const toggleMute = () => {
@@ -239,7 +311,7 @@ const Stories: React.FC = () => {
   return (
     <section className="bg-white border border-gray-200 ">
       <div className="px-3 py-3">
-        <div className="flex sm:gap-4  overflow-x-auto no-scrollbar">
+        <div className="flex sm:gap-4  overflow-x-auto no-scrollbar transition-all duration-150">
           {users.map((user, idx) => (
             <div
               key={user.id}
@@ -260,7 +332,7 @@ const Stories: React.FC = () => {
                       style={
                         {
                           "--ring": "3px",
-                          animationDuration: "3s",
+                          animationDuration: "1.5s",
                         } as React.CSSProperties
                       }
                       onAnimationEnd={() => handleRingEnd(idx)}
@@ -268,11 +340,7 @@ const Stories: React.FC = () => {
                   )}
 
                   <div className="w-full h-full rounded-full bg-white p-[3px] relative z-20">
-                    <StaticImage
-                      src="../images/image.png"
-                      className="w-full h-full rounded-full object-cover"
-                      alt={user.name}
-                    />
+                    {renderAvatar(user.name)}
                     {user.name === "you" && (
                       <div className=" absolute bottom-1 right-1 w-5 h-5 rounded-full bg-white p-[3px] z-40">
                         <IoAdd className="w-full h-full bg-blue-500 text-white rounded-full" />
@@ -308,18 +376,18 @@ const Stories: React.FC = () => {
           </div>
 
           <div className="flex-1 relative flex items-center justify-center">
-            <div className="relative w-[min(92vw,420px)] aspect-10/16 bg-black rounded-xl overflow-hidden centered  shadow-2xl z-20">
+            <div className="relative w-[min(92vw,calc(97vh*0.5625))] aspect-9/16 bg-black rounded-xl overflow-hidden centered  shadow-2xl z-20">
               {/* Media */}
               {(() => {
                 const slide = slidesByStory[currentStory][currentSlide]
-                console.log("slide", slide)
+
                 if (!slide) return null
                 if (slide.type === "video") {
                   return (
                     <video
                       ref={videoRef}
                       src={exampleVideo}
-                      className="w-full h-full object-cover aspect-square"
+                      className="w-full h-full object-cover"
                       key={`${currentStory}-${currentSlide}`}
                       autoPlay
                       muted={isMuted}
@@ -457,6 +525,60 @@ const Stories: React.FC = () => {
               >
                 <MdNavigateNext className="w-7 h-7" />
               </button>
+
+              {/* Viewer count pill (centered) */}
+              <button
+                className="absolute bottom-3 left-3 z-10 bg-white/30 text-white text-xs p-2 rounded-full backdrop-blur-sm flex items-center gap-1"
+                onClick={() => setIsCountOpen(prev => !prev)}
+                onScroll={handleScrollUp}
+                aria-label="Viewers"
+              >
+                <IoEye className="w-4 h-4" />
+                <span>5</span>
+              </button>
+              {isCountOpen && (
+                <>
+                  <button
+                    className="absolute inset-0 z-20 bg-black/30"
+                    onClick={() => setIsCountOpen(false)}
+                    aria-label="Close viewers"
+                  />
+                  <div className="absolute bottom-3 left-2 z-30 py-4 bg-white text-gray-900 rounded-lg shadow-xl w-[min(94%,400px)]">
+                    <div className="flex items-center justify-between px-3 py-2 shadow-sm bg-white">
+                      <div className="flex items-center gap-2">
+                        <IoEye className="w-5 h-5" />
+                        <span className="text-sm font-medium">5 views</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <IoDownloadOutline className="w-5 h-5" />
+                        <MdDelete className="w-5 h-5" />
+                        <button
+                          className="p-1 rounded hover:bg-gray-100"
+                          onClick={() => setIsCountOpen(false)}
+                          aria-label="Close"
+                        >
+                          <RxCross2 className="w-5 h-5" />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="max-h-40 overflow-auto px-3 py-2 no-scrollbar">
+                      <p className="text-sm font-semibold py-2">Viewers</p>
+                      {users?.map((user: { id: number; name: string }) => (
+                        <div className="flex items-center justify-between gap-2 py-1">
+                          <div className="flex items-center gap-2">
+                            <ProfileButton />
+                            <p className="text-sm">{user?.name}</p>
+                          </div>
+                          <div className="flex items-center gap-3 text-gray-500">
+                            <IoEllipsisVertical className="w-5 h-5" />
+                            <BiSolidShare className="w-5 h-5" />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
