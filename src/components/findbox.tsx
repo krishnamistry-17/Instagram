@@ -1,5 +1,6 @@
 import { StaticImage } from "gatsby-plugin-image"
 import * as React from "react"
+import ProfileButton from "./profilebutton"
 
 const FindPeopleBox: React.FC = () => {
   const [people, setPeople] = React.useState<
@@ -17,85 +18,23 @@ const FindPeopleBox: React.FC = () => {
     { id: 6, name: "jack", profilePicture: "../images/image10.png" },
   ])
 
-  const renderAvatar = (name: string) => {
-    if (name === "jack") {
-      return (
-        <StaticImage
-          src="../images/image5.png"
-          className="w-full h-full rounded-full object-cover"
-          alt={name}
-        />
-      )
-    }
-    if (name === "alice") {
-      return (
-        <StaticImage
-          src="../images/image7.png"
-          className="w-full h-full rounded-full object-cover"
-          alt={name}
-        />
-      )
-    }
-    if (name === "bob") {
-      return (
-        <StaticImage
-          src="../images/image6.png"
-          className="w-full h-full rounded-full object-cover"
-          alt={name}
-        />
-      )
-    }
-    if (name === "carol") {
-      return (
-        <StaticImage
-          src="../images/image8.png"
-          className="w-full h-full rounded-full object-cover"
-          alt={name}
-        />
-      )
-    }
-    if (name === "dave") {
-      return (
-        <StaticImage
-          src="../images/image9.png"
-          className="w-full h-full rounded-full object-cover"
-          alt={name}
-        />
-      )
-    }
-
-    if (name === "eve") {
-      return (
-        <StaticImage
-          src="../images/image10.png"
-          className="w-full h-full rounded-full object-cover"
-          alt={name}
-        />
-      )
-    }
-  }
-
   return (
-    <div className="bg-white border border-gray-200 rounded-md p-4">
+    <div className="bg-white border border-gray-200 rounded-md md:rounded-xl p-4 shadow-sm">
       <div className="flex items-center justify-between">
         <h2 className="text-sm font-semibold">Find People</h2>
-        <h2 className="text-sm font-semibold text-blue-500">Sea all</h2>
+        <h2 className="text-sm font-semibold text-blue-600 hover:underline">See all</h2>
       </div>
       <div className="flex items-center gap-3 my-3 overflow-x-auto no-scrollbar">
         {people?.map(item => {
           return (
             <div
               key={item?.id}
-              className="flex flex-col items-center border border-gray-200 rounded-md p-5 min-w-[130px] w-full
+              className="flex flex-col items-center border border-gray-200 rounded-md p-5 min-w-[130px] w-full hover:shadow-sm transition-shadow
             "
             >
-              <div className="w-13 h-13 rounded-full bg-linear-to-tr from-pink-500 to-yellow-500 p-px">
-                <div className="w-full h-full rounded-full bg-white p-[3px]">
-                  {renderAvatar(item?.name)}
-                </div>
-              </div>
+              <ProfileButton name={item?.name} size="lg" />
               <p className="text-sm py-2 text-center">{item?.name}</p>
-              <button className=" text-sm border border-gray-200 bg-blue-500 text-white rounded-md p-1 w-full">
+              <button className=" text-sm border border-transparent bg-blue-500 hover:bg-blue-600 text-white rounded-md px-3 py-1 w-full">
                 Follow
               </button>
             </div>

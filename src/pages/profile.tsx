@@ -4,6 +4,7 @@ import * as React from "react"
 import { FaUserPlus } from "react-icons/fa"
 import FindPeopleBox from "../components/findbox"
 import Posts from "../components/posts"
+import ProfileButton from "../components/profilebutton"
 
 const ProfilePage: React.FC = () => {
   const [user, setUser] = React.useState({
@@ -19,26 +20,17 @@ const ProfilePage: React.FC = () => {
 
   return (
     <Layout>
-      <div className=" max-w-xl mx-auto">
-        <div className="flex items-center gap-8 px-2">
+      <div className="max-w-2xl mx-auto">
+        <div className="flex items-center gap-6 px-2">
           <div className="flex flex-col items-center justify-center pt-4">
-            <div className="w-13 h-13 rounded-full bg-linear-to-tr from-pink-500 to-yellow-500 p-px">
-              <div className="w-full h-full rounded-full bg-white p-[3px]">
-                <StaticImage
-                  src="../images/image7.png"
-                  className="w-11 h-11 rounded-full object-cover"
-                  alt="suggestion 1"
-                />
-              </div>
-            </div>  
-
-            <div className="flex flex-col items-center justify-center py-2">
-              <p className="sm:text-2xl text-md font-bold">{user.name}</p>
+            <ProfileButton name="alice" size="lg" />
+            <div className="flex flex-col items-center justify-center pb-2">
+              <p className="sm:text-2xl text-lg font-bold">{user.name}</p>
               <p className="text-sm text-gray-500">{user.username}</p>
             </div>
           </div>
 
-          <div className="flex items-center justify-between gap-4 ">
+          <div className="flex items-center justify-between gap-6 ">
             <div className="flex flex-col gap-2 items-center">
               <p className="text-md font-semibold">{user.posts}</p>
               <p className="text-xs  font-semibold">Posts</p>
@@ -53,17 +45,22 @@ const ProfilePage: React.FC = () => {
             </div>
           </div>
         </div>
-        <div className="flex flex-col ">
-          <p className="text-sm text-gray-500 px-2">{user.bio}</p>
+        <div className="flex flex-col">
+          <div className="bg-white rounded-md  shadow-sm p-3 mx-2">
+            <p className="text-sm text-gray-600">{user.bio}</p>
+          </div>
           <div className="flex items-center gap-2 my-3 mx-2">
             <button
               className="text-sm md:max-w-sm max-w-xs w-full 
-              px-3 py-1 rounded-md border border-gray-200 hover:bg-gray-100"
+              px-3 py-1.5 rounded-md border border-gray-200 hover:bg-gray-100"
             >
               Edit Profile
             </button>
-            <button>
-              <FaUserPlus className="w-4 h-4" />
+            <button
+              className="text-sm md:max-w-sm max-w-xs w-full 
+              px-3 py-1.5 rounded-md border border-gray-200 hover:bg-gray-100"
+            >
+              Share Profile
             </button>
           </div>
           <div className="my-3 mx-1">

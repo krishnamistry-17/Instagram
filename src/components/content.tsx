@@ -146,20 +146,18 @@ const Content: React.FC = () => {
         return (
           <article
             key={item.id}
-            className="bg-white border border-gray-200 rounded-md overflow-hidden relative"
+            className="bg-white/80 border border-gray-200/70 rounded-md md:rounded-xl shadow-sm hover:shadow-md transition-shadow relative"
           >
             <header className="px-4 py-3 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <ProfileButton name={item?.userName} />
+                <ProfileButton name={item?.userName} size="lg" />
                 <div className="leading-tight">
                   <p className="text-sm font-semibold">{item.userName}</p>
                   <p className="text-[11px] text-gray-500">{item.location}</p>
                 </div>
               </div>
               <button
-                className="text-sm text-gray-500 hover:text-gray-700 px-2 py-1 rounded hover:bg-gray-100
-                focus:outline-none focus:ring-0
-                "
+                className="text-sm text-gray-500 hover:text-gray-700 px-2 py-1 rounded hover:bg-gray-100 active:scale-95 transition focus:outline-none focus:ring-0"
                 onClick={() => handleMoreOptions(item?.id)}
                 aria-haspopup="menu"
                 aria-expanded={openMenuPostId === item.id}
@@ -177,7 +175,7 @@ const Content: React.FC = () => {
               >
                 <button
                   role="menuitem"
-                  className="w-full px-3 py-2 text-sm flex items-center gap-2 hover:bg-gray-50 focus:outline-none focus:ring-0"
+                  className="w-full px-3 py-2 text-sm flex items-center gap-2 hover:bg-gray-50 rounded focus:outline-none focus:ring-0"
                   onClick={() => {
                     setOpenMenuPostId(null)
                   }}
@@ -187,7 +185,7 @@ const Content: React.FC = () => {
                 </button>
                 <button
                   role="menuitem"
-                  className="w-full px-3 py-2 text-sm flex items-center gap-2 hover:bg-gray-50"
+                  className="w-full px-3 py-2 text-sm flex items-center gap-2 hover:bg-gray-50 rounded"
                   onClick={() => {
                     setShareDialogOpen(true)
                     setOpenMenuPostId(null)
@@ -198,7 +196,7 @@ const Content: React.FC = () => {
                 </button>
                 <button
                   role="menuitem"
-                  className="w-full px-3 py-2 text-sm text-red-600 flex items-center gap-2 hover:bg-red-50"
+                  className="w-full px-3 py-2 text-sm text-red-600 flex items-center gap-2 hover:bg-red-50 rounded"
                   onClick={() => {
                     setOpenDeleteModal(true)
                     setOpenMenuPostId(null)
@@ -220,23 +218,35 @@ const Content: React.FC = () => {
             <div className="px-4 py-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <button onClick={toggleLike}>
+                  <button
+                    onClick={toggleLike}
+                    aria-pressed={isLiked}
+                    className="p-1 rounded hover:bg-gray-100 active:scale-95 transition"
+                  >
                     {isLiked ? (
-                      <MdFavorite className="w-5 h-5" />
+                      <MdFavorite className="w-5 h-5 text-red-500" />
                     ) : (
-                      <MdFavoriteBorder className="w-5 h-5" />
+                      <MdFavoriteBorder className="w-5 h-5 text-gray-700" />
                     )}
                   </button>
 
-                  <IoChatbubbleOutline className="w-4 h-4" />
-                  <FiSend className="w-4 h-4" />
+                  <button className="p-1 rounded hover:bg-gray-100 active:scale-95 transition">
+                    <IoChatbubbleOutline className="w-4 h-4 text-gray-700" />
+                  </button>
+                  <button className="p-1 rounded hover:bg-gray-100 active:scale-95 transition">
+                    <FiSend className="w-4 h-4 text-gray-700" />
+                  </button>
                 </div>
                 <div>
-                  <button onClick={toggleSave}>
+                  <button
+                    onClick={toggleSave}
+                    aria-pressed={isSaved}
+                    className="p-1 rounded hover:bg-gray-100 active:scale-95 transition"
+                  >
                     {isSaved ? (
-                      <FaBookmark className="w-4 h-4" />
+                      <FaBookmark className="w-4 h-4 text-blue-600" />
                     ) : (
-                      <FaRegBookmark className="w-4 h-4" />
+                      <FaRegBookmark className="w-4 h-4 text-gray-700" />
                     )}
                   </button>
                 </div>
@@ -251,7 +261,7 @@ const Content: React.FC = () => {
               </p>
             </div>
             {ShareDialogOpen && (
-              <div className=" fixed inset-0 bg-black/20 z-50 ">
+              <div className=" fixed inset-0 bg-black/20 backdrop-blur-[1px] z-50 ">
                 <div
                   className="max-w-[400px] w-full h-fit bg-white rounded-md p-4 shadow-xs absolute 
                 bottom-0 mx-auto
@@ -271,22 +281,21 @@ const Content: React.FC = () => {
                     Share this post with your friends
                   </p>
                   <div className="flex items-center gap-2 mt-4">
-                    <button className="w-10 h-10 rounded-full bg-gray-200">
-                      <FaFacebook className="w-9 h-5 text-blue-500" />
+                    <button className="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 transition">
+                      <FaFacebook className="w-9 h-5 text-blue-600" />
                     </button>
-                    <button className="w-10 h-10 rounded-full bg-gray-200">
-                      <FaTwitter className="w-9 h-5 text-blue-500" />
+                    <button className="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 transition">
+                      <FaTwitter className="w-9 h-5 text-sky-500" />
                     </button>
-                    <button className="w-10 h-10 rounded-full bg-gray-200">
-                      {" "}
-                      <FaWhatsapp className="w-9 h-5 text-blue-500" />
+                    <button className="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 transition">
+                      <FaWhatsapp className="w-9 h-5 text-green-600" />
                     </button>
                   </div>
                 </div>
               </div>
             )}
             {openDeleteModal && (
-              <div className=" fixed inset-0 bg-black/20 z-50 ">
+              <div className=" fixed inset-0 bg-black/20 backdrop-blur-[1px] z-50 ">
                 <div
                   className="max-w-[400px] w-full h-fit bg-white rounded-md p-4 shadow-xs absolute 
                 bottom-0 mx-auto
@@ -307,7 +316,7 @@ const Content: React.FC = () => {
                   </p>
                   <div className="flex items-center gap-2 mt-4">
                     <button
-                      className="w-full bg-red-500 text-white px-4 py-2 rounded-md"
+                      className="w-full bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md transition"
                       onClick={() => {
                         handleDeletePost(item?.id)
                         setOpenDeleteModal(false)
@@ -316,7 +325,7 @@ const Content: React.FC = () => {
                       Delete
                     </button>
                     <button
-                      className="w-full bg-gray-200 text-gray-700 px-4 py-2 rounded-md"
+                      className="w-full border border-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-50 transition"
                       onClick={() => setOpenDeleteModal(false)}
                     >
                       Cancel

@@ -19,9 +19,12 @@ const Stories: React.FC = () => {
       { id: 4, name: "carol" },
       { id: 5, name: "dave" },
       { id: 6, name: "eve" },
+      { id: 7, name: "jack" },
     ],
     []
   )
+  const [isImage, setIsImage] = React.useState<boolean>(false)
+  const [isVideo, setIsVideo] = React.useState<boolean>(false)
 
   const slidesByStory = React.useMemo(
     () => [
@@ -53,6 +56,7 @@ const Stories: React.FC = () => {
       { type: "image", id: "image3" as const },
       { type: "video", id: "video1" as const },
       { type: "image", id: "image4" as const },
+      { type: "image", id: "image5" as const },
     ]
   )
 
@@ -68,6 +72,15 @@ const Stories: React.FC = () => {
   const imageTimerRef = React.useRef<number | null>(null)
   const [isMuted, setIsMuted] = React.useState(true)
   const [isPaused, setIsPaused] = React.useState(false)
+
+  //control visibility
+  React.useEffect(() => {
+    if (!isOpen) return
+    const slide = slidesByStory[currentStory][currentSlide]
+    if (!slide) return
+    setIsImage(slide.type === "image")
+    setIsVideo(slide.type === "video")
+  }, [isOpen, currentStory, currentSlide, slidesByStory])
 
   // Ensure video starts on desktop where autoplay can be flaky
   React.useEffect(() => {
@@ -169,11 +182,19 @@ const Stories: React.FC = () => {
         />
       )
     }
-
     if (name === "eve") {
       return (
         <StaticImage
           src="../images/image10.png"
+          className="w-full h-full rounded-full object-cover"
+          alt={name}
+        />
+      )
+    }
+    if (name === "jack") {
+      return (
+        <StaticImage
+          src="../images/image6.png"
           className="w-full h-full rounded-full object-cover"
           alt={name}
         />
@@ -308,9 +329,9 @@ const Stories: React.FC = () => {
   }
 
   return (
-    <section className="bg-white border border-gray-200 ">
+    <section className="bg-white border border-gray-200 rounded-md md:rounded-xl shadow-sm">
       <div className="px-3 py-3">
-        <div className="flex sm:gap-4  overflow-x-auto no-scrollbar transition-all duration-150">
+        <div className="flex sm:gap-2  overflow-x-auto no-scrollbar transition-all duration-150">
           {users.map((user, idx) => (
             <div
               key={user.id}
@@ -374,7 +395,7 @@ const Stories: React.FC = () => {
           </div>
 
           <div className="flex-1 relative flex items-center justify-center">
-            <div className="relative w-[min(92vw,calc(97vh*0.5625))] aspect-9/16 bg-black rounded-xl overflow-hidden centered  shadow-2xl z-20">
+            <div className="relative w-[min(92vw,calc(99vh*0.5625))] aspect-9/16 bg-black rounded-xl overflow-hidden centered  shadow-2xl z-20">
               {/* Media */}
               {(() => {
                 const slide = slidesByStory[currentStory][currentSlide]
@@ -485,30 +506,34 @@ const Stories: React.FC = () => {
               </button>
 
               {/* Controls */}
-              <div className="absolute bottom-3 right-3 z-10 flex items-center gap-2">
-                <button
-                  className="bg-white/30 text-white rounded-full p-2"
-                  onClick={toggleMute}
-                  aria-label={isMuted ? "Unmute" : "Mute"}
-                >
-                  {isMuted ? (
-                    <MdVolumeOff className="w-6 h-6" />
-                  ) : (
-                    <MdVolumeUp className="w-6 h-6" />
-                  )}
-                </button>
-                <button
-                  className="bg-white/30 text-white rounded-full p-2"
-                  onClick={togglePlay}
-                  aria-label={isPaused ? "Play" : "Pause"}
-                >
-                  {isPaused ? (
-                    <MdPlayArrow className="w-6 h-6" />
-                  ) : (
-                    <MdPause className="w-6 h-6" />
-                  )}
-                </button>
-              </div>
+              {isVideo && (
+                <>
+                  <div className="absolute bottom-3 right-3 z-10 flex items-center gap-2">
+                    <button
+                      className="bg-white/30 text-white rounded-full p-2"
+                      onClick={toggleMute}
+                      aria-label={isMuted ? "Unmute" : "Mute"}
+                    >
+                      {isMuted ? (
+                        <MdVolumeOff className="w-6 h-6" />
+                      ) : (
+                        <MdVolumeUp className="w-6 h-6" />
+                      )}
+                    </button>
+                    <button
+                      className="bg-white/30 text-white rounded-full p-2"
+                      onClick={togglePlay}
+                      aria-label={isPaused ? "Play" : "Pause"}
+                    >
+                      {isPaused ? (
+                        <MdPlayArrow className="w-6 h-6" />
+                      ) : (
+                        <MdPause className="w-6 h-6" />
+                      )}
+                    </button>
+                  </div>
+                </>
+              )}
 
               {/* Desktop arrows */}
               <button

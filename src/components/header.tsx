@@ -4,7 +4,6 @@ import { FaHouse } from "react-icons/fa6"
 import { BsFillChatDotsFill } from "react-icons/bs"
 import { MdFavoriteBorder } from "react-icons/md"
 import { IoMdMenu } from "react-icons/io"
-
 import { StaticImage } from "gatsby-plugin-image"
 import { IoSearch } from "react-icons/io5"
 import Menu from "./menu"
@@ -27,17 +26,27 @@ const Header: React.FC = () => {
             alt="logo"
           />
         </Link>
-        <div className="relative w-56 md:w-72 h-9 flex items-center justify-center">
+        <div className="flex-1 sm:flex hidden justify-center px-4">
           <div
-            className={`w-full h-full border border-gray-200 rounded-md px-3 flex items-center transition-opacity duration-200 ${
-              isSearchOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-            }`}
+            className={`relative w-full max-w-md transition-all duration-200 
+              ${
+                isSearchOpen
+                  ? "opacity-100"
+                  : "opacity-0 pointer-events-none -translate-y-1"
+              }
+            `}
           >
-            <input
-              type="search"
-              placeholder="Search"
-              className="w-full bg-transparent focus:outline-none focus:ring-0"
-            />
+            <div
+              className="flex items-center gap-2 rounded-full bg-white/70 backdrop-blur 
+            px-3 py-2 ring-1 ring-gray-200 focus-within:ring-gray-300 shadow-sm"
+            >
+              <IoSearch className="w-4 h-4 text-gray-500" />
+              <input
+                type="search"
+                placeholder="Search"
+                className="flex-1 bg-transparent outline-none text-sm placeholder:text-gray-400"
+              />
+            </div>
           </div>
         </div>
         <div className="flex items-center gap-4">

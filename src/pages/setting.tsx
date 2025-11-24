@@ -10,12 +10,14 @@ import { FaQuestion } from "react-icons/fa"
 import { FaInfoCircle } from "react-icons/fa"
 import { FaSignOutAlt } from "react-icons/fa"
 import { IoClose } from "react-icons/io5"
+import { MdDarkMode } from "react-icons/md"
 
 const SettingPage: React.FC = () => {
   const details = [
     { id: 3, label: "Privacy", icon: FaEye },
     { id: 2, label: "Security", icon: FaLock },
     { id: 4, label: "Notifications", icon: FaBell },
+    { id: 8, label: "Theme", icon: MdDarkMode },
     { id: 5, label: "Help", icon: FaQuestion },
     { id: 1, label: "Account", icon: FaUser },
     { id: 6, label: "About", icon: FaInfoCircle },
@@ -36,27 +38,25 @@ const SettingPage: React.FC = () => {
           </div>
         </div>
         <div className="flex flex-col gap-4 my-3">
-          <input
-            type="search"
-            placeholder="Search"
-            className="w-full sm:max-w-sm border border-gray-200 rounded-md p-2 bg-gray-100"
-          />
-          <div className=" flex flex-col gap-2">
-            <ul className="space-y-3">
+          <div className="bg-white border border-gray-200 rounded-md md:rounded-xl shadow-sm p-3">
+            <input
+              type="search"
+              placeholder="Search settings"
+              className="w-full sm:max-w-sm border border-gray-200 rounded-md p-2 bg-gray-100"
+            />
+          </div>
+          <div className="bg-white border border-gray-200 rounded-md md:rounded-xl shadow-sm">
+            <ul className="divide-y divide-gray-100">
               {details.map(item => (
-                <li key={item.id}>
-                  <div
-                    className="flex items-center gap-2 hover:bg-gray-100 rounded-md p-2"
+                <li key={item.id} className="px-2">
+                  <button
+                    className="w-full flex items-center gap-2 hover:bg-gray-50 rounded-md p-3 text-left"
                     onClick={() => item.id === 7 && setLogoutModal(true)}
                   >
-                    <button className="flex items-center gap-2 hover:bg-gray-100 rounded-md p-2">
-                      <item.icon className="w-5 h-5" />
-                      <span>{item.label}</span>
-                    </button>
-                    <div className="ml-auto">
-                      <FaAngleRight className="w-5 h-5 text-gray-300" />
-                    </div>
-                  </div>
+                    <item.icon className="w-5 h-5" />
+                    <span className="text-sm">{item.label}</span>
+                    <FaAngleRight className="w-5 h-5 text-gray-300 ml-auto" />
+                  </button>
                 </li>
               ))}
             </ul>
