@@ -1,7 +1,6 @@
 import { StaticImage } from "gatsby-plugin-image"
 import Layout from "../components/layout"
 import * as React from "react"
-import { FaUserPlus } from "react-icons/fa"
 import FindPeopleBox from "../components/findbox"
 import Posts from "../components/posts"
 import ProfileButton from "../components/profilebutton"
@@ -11,8 +10,6 @@ const ProfilePage: React.FC = () => {
     name: "alice",
     username: "@alice",
     bio: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.",
-    profilePicture: "../images/image.png",
-    coverPicture: "../images/image.png",
     followers: 100,
     following: 100,
     posts: 10,
@@ -46,7 +43,7 @@ const ProfilePage: React.FC = () => {
           </div>
         </div>
         <div className="flex flex-col">
-          <div className="bg-white rounded-md  shadow-sm p-3 mx-2">
+          <div className=" rounded-md  shadow-sm p-3 mx-2">
             <p className="text-sm text-gray-600">{user.bio}</p>
           </div>
           <div className="flex items-center gap-2 my-3 mx-2">

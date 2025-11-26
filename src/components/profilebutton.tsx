@@ -1,7 +1,7 @@
 import { StaticImage } from "gatsby-plugin-image"
 import * as React from "react"
 
-type Props = { name: string; size?: "sm" | "lg" }
+type Props = { name: string; size?: "sm" | "lg"; liked?: boolean }
 
 const ProfileButton: React.FC<Props> = ({ name, size = "" as any }) => {
   const isBrowser = typeof window !== "undefined"
@@ -9,8 +9,8 @@ const ProfileButton: React.FC<Props> = ({ name, size = "" as any }) => {
     isBrowser && window.location.pathname.startsWith("/profile")
 
   const isLarge = (size as string) === "lg" || (!size && isProfilePage)
-  const outerSize = isLarge ? "w-13 h-13" : "w-10 h-10"
-  const imgSize = isLarge ? "w-11 h-11" : "w-8 h-8"
+  const outerSize = isLarge ? "w-14 h-14" : "w-10 h-10"
+  const imgSize = isLarge ? "w-12 h-12" : "w-8 h-8"
   const imgClass = `${imgSize} rounded-full object-cover`
 
   const renderAvatar = (n: string) => {
@@ -39,7 +39,36 @@ const ProfileButton: React.FC<Props> = ({ name, size = "" as any }) => {
         <StaticImage src="../images/image10.png" className={imgClass} alt={n} />
       )
     }
-    // default / "you"
+    if (n === "jack") {
+      return (
+        <StaticImage src="../images/image6.png" className={imgClass} alt={n} />
+      )
+    }
+    if (n === "lily") {
+      return (
+        <StaticImage src="../images/image8.png" className={imgClass} alt={n} />
+      )
+    }
+    if (n === "lucy") {
+      return (
+        <StaticImage src="../images/image8.png" className={imgClass} alt={n} />
+      )
+    }
+    if (n === "mary") {
+      return (
+        <StaticImage src="../images/image9.png" className={imgClass} alt={n} />
+      )
+    }
+    if (n === "nina") {
+      return (
+        <StaticImage src="../images/image10.png" className={imgClass} alt={n} />
+      )
+    }
+    if (n === "olive") {
+      return (
+        <StaticImage src="../images/image6.png" className={imgClass} alt={n} />
+      )
+    }
     return (
       <StaticImage src="../images/image5.png" className={imgClass} alt={n} />
     )

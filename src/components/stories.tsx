@@ -1,13 +1,16 @@
 import * as React from "react"
 import { StaticImage } from "gatsby-plugin-image"
 import { RxCross2 } from "react-icons/rx"
-import { MdNavigateNext, MdNavigateBefore, MdDelete } from "react-icons/md"
-import { IoAdd, IoDownloadOutline, IoEllipsisVertical } from "react-icons/io5"
+import { MdNavigateNext, MdNavigateBefore } from "react-icons/md"
+import { IoAdd } from "react-icons/io5"
 import exampleVideo from "../images/videos/example.mp4"
 import { MdVolumeOff, MdVolumeUp, MdPause, MdPlayArrow } from "react-icons/md"
 import { IoEye } from "react-icons/io5"
-import ProfileButton from "./profilebutton"
-import { BiSolidShare } from "react-icons/bi"
+
+import { imageComponents } from "./storymedia"
+import { MdFavorite } from "react-icons/md"
+import { MdFavoriteBorder } from "react-icons/md"
+import { Viewercount } from "./viewercount"
 
 const Stories: React.FC = () => {
   const users = React.useMemo(
@@ -70,66 +73,28 @@ const Stories: React.FC = () => {
   const [isOpen, setIsOpen] = React.useState(false)
   const [isCountOpen, setIsCountOpen] = React.useState(false)
   const [currentStory, setCurrentStory] = React.useState(0)
+  console.log("currentStory", currentStory)
   const [currentSlide, setCurrentSlide] = React.useState(0)
+  console.log("currentSlide", currentSlide)
   const [progress, setProgress] = React.useState(0)
   const [rotating, setRotating] = React.useState<Record<number, boolean>>({})
   const [angles, setAngles] = React.useState<Record<number, number>>({})
+  const [likedPostIds, setLikedPostIds] = React.useState<number | null>(null)
+  console.log("likedPostIds", likedPostIds)
   const [openingIdx, setOpeningIdx] = React.useState<number | null>(null)
   const videoRef = React.useRef<HTMLVideoElement | null>(null)
+  const imageRef = React.useRef<HTMLImageElement | null>(null)
   const imageTimerRef = React.useRef<number | null>(null)
   const [isMuted, setIsMuted] = React.useState(true)
   const [isPaused, setIsPaused] = React.useState(false)
+  const [isHolding, setIsHolding] = React.useState<boolean>(false)
+  const holdTimeoutRef = React.useRef<number | null>(null)
 
   const [panelHeight, setPanelHeight] = React.useState(230)
   const MIN_HEIGHT = 230
-  const MAX_HEIGHT = 400
+
   const [dragStartY, setDragStartY] = React.useState<number | null>(null)
   const [startHeight, setStartHeight] = React.useState<number>(MIN_HEIGHT)
-
-  const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
-    e.stopPropagation()
-    if (typeof e.preventDefault === "function") e.preventDefault()
-    const clientY =
-      "touches" in e
-        ? (e as React.TouchEvent).touches[0].clientY
-        : (e as React.MouseEvent).clientY
-    setDragStartY(clientY)
-    setStartHeight(panelHeight)
-  }
-
-  const handleDragMove = (e: React.MouseEvent | React.TouchEvent) => {
-    e.stopPropagation()
-
-    if (typeof e.preventDefault === "function") e.preventDefault()
-    if (dragStartY === null) return
-
-    const clientY =
-      "touches" in e
-        ? (e as React.TouchEvent).touches[0].clientY
-        : (e as React.MouseEvent).clientY
-    const delta = dragStartY - clientY
-
-    let newHeight = startHeight + delta
-
-    if (newHeight < MIN_HEIGHT) newHeight = MIN_HEIGHT
-    if (newHeight > MAX_HEIGHT) newHeight = MAX_HEIGHT
-
-    setPanelHeight(newHeight)
-  }
-
-  const handleDragEnd = (e?: React.MouseEvent | React.TouchEvent) => {
-    if (e) {
-      e.stopPropagation()
-      if (typeof e.preventDefault === "function") e.preventDefault()
-    }
-    if (panelHeight > MIN_HEIGHT + (MAX_HEIGHT - MIN_HEIGHT) * 0.4) {
-      setPanelHeight(MAX_HEIGHT)
-    } else {
-      setPanelHeight(MIN_HEIGHT)
-    }
-
-    setDragStartY(null)
-  }
 
   React.useEffect(() => {
     if (!isOpen) return
@@ -258,7 +223,7 @@ const Stories: React.FC = () => {
     if (name === "lily") {
       return (
         <StaticImage
-          src="../images/image7.png"
+          src="../images/image8.png"
           className="w-full h-full rounded-full object-cover"
           alt={name}
         />
@@ -305,10 +270,9 @@ const Stories: React.FC = () => {
     // }
   }
 
-  // Manage progress per slide--> that shows the progress fro slides
+  // Manage progress per slide (pause when holding or viewers open)
   React.useEffect(() => {
     if (!isOpen) return
-
     if (imageTimerRef.current) {
       window.clearInterval(imageTimerRef.current)
       imageTimerRef.current = null
@@ -318,6 +282,7 @@ const Stories: React.FC = () => {
     const active = slides[currentSlide]
     if (!active) return
     if (active.type === "image") {
+      if (isHolding || isCountOpen) return
       imageTimerRef.current = window.setInterval(() => {
         setProgress(prev => {
           if (prev >= 100) {
@@ -334,7 +299,24 @@ const Stories: React.FC = () => {
         }
       }
     }
-  }, [isOpen, currentStory, currentSlide])
+  }, [isOpen, currentStory, currentSlide, isHolding, isCountOpen])
+
+  // Pause/resume video when viewers panel opens/closes
+  React.useEffect(() => {
+    const v = videoRef.current
+    if (!v) return
+    if (isCountOpen) {
+      try {
+        v.pause()
+        setIsPaused(true)
+      } catch {}
+    } else if (isOpen && isVideo) {
+      try {
+        v.play()
+        setIsPaused(false)
+      } catch {}
+    }
+  }, [isCountOpen, isOpen, isVideo])
 
   // Individual circle rotation effect
   React.useEffect(() => {
@@ -402,6 +384,21 @@ const Stories: React.FC = () => {
     }
   }
 
+  // prevents multiple moves on mobile
+  const lastNavAtRef = React.useRef<number>(0)
+  const safeGoPrev = () => {
+    const now = Date.now()
+    if (now - lastNavAtRef.current < 280) return
+    lastNavAtRef.current = now
+    goPrev()
+  }
+  const safeGoNext = () => {
+    const now = Date.now()
+    if (now - lastNavAtRef.current < 280) return
+    lastNavAtRef.current = now
+    goNext()
+  }
+
   const toggleMute = () => {
     setIsMuted(m => {
       const next = !m
@@ -424,14 +421,91 @@ const Stories: React.FC = () => {
     }
   }
 
+  // Double-tap handling
+  const lastTapTimeRef = React.useRef<number>(0)
+  const tapZoneTimerRef = React.useRef<number | null>(null)
+  const handleTapZoneTouchEnd =
+    (side: "left" | "right") => (e: React.TouchEvent) => {
+      if (tapZoneTimerRef.current !== null) {
+        window.clearTimeout(tapZoneTimerRef.current)
+        tapZoneTimerRef.current = null
+        e.preventDefault()
+        e.stopPropagation()
+        togglePlay()
+        return
+      }
+      // Start single-tap timer; if no second tap within window, navigate
+      tapZoneTimerRef.current = window.setTimeout(() => {
+        if (side === "left") {
+          safeGoPrev()
+        } else {
+          safeGoNext()
+        }
+        tapZoneTimerRef.current = null
+      }, 280)
+    }
+
+  const handleMediaTouchEnd = (e: React.TouchEvent) => {
+    if (isHolding) {
+      // If we were holding, end hold and do not treat as tap
+      endHold()
+      return
+    }
+    const now = Date.now()
+    if (now - lastTapTimeRef.current < 300) {
+      e.preventDefault()
+      e.stopPropagation()
+      togglePlay()
+      lastTapTimeRef.current = 0
+      return
+    }
+    lastTapTimeRef.current = now
+  }
+
+  const startHold = () => {
+    if (holdTimeoutRef.current) {
+      window.clearTimeout(holdTimeoutRef.current)
+      holdTimeoutRef.current = null
+    }
+    holdTimeoutRef.current = window.setTimeout(() => {
+      setIsHolding(true)
+      // Pause video
+      if (isVideo && videoRef.current) {
+        try {
+          videoRef.current.pause()
+        } catch {}
+      }
+      // Timer pause handled by effect via isHolding
+    }, 250)
+  }
+
+  const endHold = () => {
+    if (holdTimeoutRef.current) {
+      window.clearTimeout(holdTimeoutRef.current)
+      holdTimeoutRef.current = null
+    }
+    if (isHolding) {
+      setIsHolding(false)
+      // Resume video
+      if (isVideo && videoRef.current) {
+        try {
+          videoRef.current.play()
+        } catch {}
+      } else if (isImage && imageRef.current) {
+        imageRef.current.src = imageRef.current.src
+      }
+      // Progress resume handled by effect on isHolding change
+    }
+  }
+
   return (
     <section className="bg-white border border-gray-200 rounded-md md:rounded-xl shadow-sm">
       <div className="px-3 py-3">
-        <div className="flex sm:gap-2  overflow-x-auto no-scrollbar transition-all duration-150">
+        <div className=" grid grid-flow-col-dense gap-0 overflow-x-auto no-scrollbar transition-all duration-150">
           {users.map((user, idx) => (
             <div
               key={user.id}
-              className="w-20 flex flex-col items-center shrink-0"
+              className="w-18 flex flex-col items-center shrink-0"
             >
               <div className="relative mx-auto">
                 <div
@@ -448,7 +522,7 @@ const Stories: React.FC = () => {
                       style={
                         {
                           "--ring": "3px",
-                          animationDuration: "1.5s",
+                          animationDuration: "0.5s",
                         } as React.CSSProperties
                       }
                       onAnimationEnd={() => handleRingEnd(idx)}
@@ -462,6 +536,11 @@ const Stories: React.FC = () => {
                       </div>
                     )}
                   </div>
+                  {user.name === "you" && slidesByStory[idx].length === 0 && (
+                    <div className=" absolute bottom-1 right-1 w-5 h-5 rounded-full bg-white p-[3px] z-40">
+                      <IoAdd className="w-full h-full bg-red-500 text-white rounded-full" />
+                    </div>
+                  )}
                 </div>
               </div>
               <p className="mt-2 text-center text-sm truncate">{user.name}</p>
@@ -490,11 +569,32 @@ const Stories: React.FC = () => {
             ))}
           </div>
 
-          <div className="flex-1 relative flex items-center justify-center">
-            <div className="relative w-[min(92vw,calc(99vh*0.5625))] aspect-9/16 bg-black rounded-xl overflow-hidden centered  shadow-2xl z-20">
+          <div
+            className="
+            relative 
+            w-full 
+            h-screen 
+            flex 
+            sm:items-center 
+            sm:justify-center"
+          >
+            <div
+              className="
+              relative 
+            bg-black
+              overflow-hidden
+              shadow-2xl
+              z-20
+              sm:rounded-xl
+              w-full               
+              h-full               
+              sm:w-[min(93vw,calc(99vh*0.5625))]
+              sm:aspect-9/16"
+            >
               {/* Media */}
               {(() => {
                 const slide = slidesByStory[currentStory][currentSlide]
+                console.log("slide", slide)
 
                 if (!slide) return null
                 if (slide.type === "video") {
@@ -508,6 +608,8 @@ const Stories: React.FC = () => {
                       muted={isMuted}
                       playsInline
                       preload="auto"
+                      onTouchStart={startHold}
+                      onTouchEnd={handleMediaTouchEnd}
                       onTimeUpdate={e => {
                         const v = e.currentTarget
                         if (v.duration && isFinite(v.duration)) {
@@ -517,104 +619,23 @@ const Stories: React.FC = () => {
                         }
                       }}
                       onEnded={handleNextSlide}
+                      onDoubleClick={togglePlay}
+                      onPause={() => setIsPaused(true)}
+                      onPlay={() => setIsPaused(false)}
                     />
                   )
                 }
                 // image slide
-                if (slide.type === "image" && slide.id === "image1") {
-                  return (
-                    <StaticImage
-                      src="../images/image3.png"
-                      className="w-full h-full object-cover"
-                      alt="story image"
-                    />
-                  )
-                }
-                if (slide.type === "image" && slide.id === "image2") {
-                  return (
-                    <StaticImage
-                      src="../images/image2.png"
-                      className="w-full h-full object-cover"
-                      alt="story image"
-                    />
-                  )
-                }
-                if (slide.type === "image" && slide.id === "image3") {
-                  return (
-                    <StaticImage
-                      src="../images/image3.png"
-                      className="w-full h-full object-cover"
-                      alt="story image"
-                    />
-                  )
-                }
-                if (slide.type === "image" && slide.id === "image4") {
-                  return (
-                    <StaticImage
-                      src="../images/image4.png"
-                      className="w-full h-full object-cover"
-                      alt="story image"
-                    />
-                  )
-                }
-                if (slide.type === "image" && slide.id === "image5") {
-                  return (
-                    <StaticImage
-                      src="../images/image5.png"
-                      className="w-full h-full object-cover"
-                      alt="story image"
-                    />
-                  )
-                }
-                if (slide.type === "image" && slide.id === "image6") {
-                  return (
-                    <StaticImage
-                      src="../images/image6.png"
-                      className="w-full h-full object-cover"
-                      alt="story image"
-                    />
-                  )
-                }
-                if (slide.type === "image" && slide.id === "image7") {
-                  return (
-                    <StaticImage
-                      src="../images/image7.png"
-                      className="w-full h-full object-cover"
-                      alt="story image"
-                    />
-                  )
-                }
-                if (slide.type === "image" && slide.id === "image8") {
-                  return (
-                    <StaticImage
-                      src="../images/image8.png"
-                      className="w-full h-full object-cover"
-                      alt="story image"
-                    />
-                  )
-                }
-                if (slide.type === "image" && slide.id === "image9") {
-                  return (
-                    <StaticImage
-                      src="../images/image9.png"
-                      className="w-full h-full object-cover"
-                      alt="story image"
-                    />
-                  )
-                }
-                if (slide.type === "image" && slide.id === "image10") {
-                  return (
-                    <StaticImage
-                      src="../images/image10.png"
-                      className="w-full h-full object-cover"
-                      alt="story image"
-                    />
-                  )
+                if (slide.type === "image") {
+                  return React.cloneElement(imageComponents[slide.id], {
+                    onTouchStart: startHold,
+                    onTouchEnd: endHold,
+                  })
                 }
               })()}
 
               {/* In-card progress bar */}
-              <div className="absolute top-0 left-0 right-0 z-10 flex gap-1 p-2">
+              <div className="absolute top-0 left-0 right-0 z-10 flex gap-1 ">
                 {slidesByStory[currentStory].map((_, i) => (
                   <div key={i} className="flex-1 h-[2px] rounded">
                     <div
@@ -639,12 +660,43 @@ const Stories: React.FC = () => {
               {/* Tap zones (mobile) */}
               <button
                 className="sm:hidden absolute inset-y-0 left-0 w-1/2"
-                onClick={goPrev}
+                onTouchStart={startHold}
+                onDoubleClick={e => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  togglePlay()
+                }}
+                onTouchEnd={e => {
+                  const wasHolding = isHolding
+                  console.log("wasHolding", wasHolding)
+                  endHold()
+                  if (wasHolding) {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    return
+                  }
+                  handleTapZoneTouchEnd("left")(e)
+                }}
                 aria-label="Previous"
               />
               <button
                 className="sm:hidden absolute inset-y-0 right-0 w-1/2"
-                onClick={goNext}
+                onTouchStart={startHold}
+                onDoubleClick={e => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  togglePlay()
+                }}
+                onTouchEnd={e => {
+                  const wasHolding = isHolding
+                  endHold()
+                  if (wasHolding) {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    return
+                  }
+                  handleTapZoneTouchEnd("right")(e)
+                }}
                 aria-label="Next"
               />
 
@@ -655,10 +707,9 @@ const Stories: React.FC = () => {
                 <RxCross2 className="w-7 h-7" />
               </button>
 
-              {/* Controls */}
               {isVideo && (
                 <>
-                  <div className="absolute bottom-3 right-3 z-10 flex items-center gap-2">
+                  <div className="absolute bottom-3 right-3 z-10 flex flex-col items-center gap-2">
                     <button
                       className="bg-white/30 text-white rounded-full p-2"
                       onClick={toggleMute}
@@ -702,78 +753,39 @@ const Stories: React.FC = () => {
               {/* Viewer count pill (centered) */}
               <button
                 className="absolute bottom-3 left-3 z-10 bg-white/30 text-white text-xs p-2 rounded-full backdrop-blur-sm flex items-center gap-1"
-                onClick={() => setIsCountOpen(prev => !prev)}
+                onClick={() => {
+                  setIsCountOpen(prev => !prev)
+                }}
                 aria-label="Viewers"
               >
                 <IoEye className="w-4 h-4" />
                 <span>5</span>
               </button>
+              {!isVideo && (
+                <button
+                  onClick={() => setLikedPostIds(currentStory)}
+                  aria-pressed={likedPostIds === currentStory}
+                  className="absolute bottom-3 right-3 z-10 bg-white/30 text-white text-xs p-2 rounded-full backdrop-blur-sm flex items-center gap-1"
+                >
+                  {likedPostIds === currentStory ? (
+                    <MdFavorite className="w-5 h-5 text-red-500" />
+                  ) : (
+                    <MdFavoriteBorder className="w-5 h-5 text-gray-700" />
+                  )}
+                </button>
+              )}
               {isCountOpen && (
-                <>
-                  <button
-                    className="absolute inset-0 z-20 bg-black/30"
-                    onClick={() => setIsCountOpen(false)}
-                    aria-label="Close viewers"
-                  />
-
-                  <div
-                    className="absolute bottom-0 left-2 z-30 bg-white text-gray-900 rounded-xl shadow-xl w-[min(94%,400px)]"
-                    style={{
-                      height: `${panelHeight}px`,
-                      transition: dragStartY ? "none" : "height 0.25s ease",
-                    }}
-                  >
-                    <div
-                      className="w-full flex justify-center py-2 cursor-grab"
-                      onMouseDown={handleDragStart}
-                      onTouchStart={handleDragStart}
-                      onMouseMove={handleDragMove}
-                      onMouseUp={handleDragEnd}
-                      onTouchMove={handleDragMove}
-                      onTouchEnd={handleDragEnd}
-                      style={{ touchAction: "none" }}
-                    >
-                      <div className="w-10 h-1.5 bg-gray-300 rounded-full"></div>
-                    </div>
-
-                    <div className="flex items-center justify-between px-3 py-2 shadow-sm bg-white">
-                      <div className="flex items-center gap-2">
-                        <IoEye className="w-5 h-5" />
-                        <span className="text-sm font-medium">5 views</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <IoDownloadOutline className="w-5 h-5" />
-                        <MdDelete className="w-5 h-5" />
-                        <button
-                          className="p-1 rounded hover:bg-gray-100"
-                          onClick={() => setIsCountOpen(false)}
-                          aria-label="Close"
-                        >
-                          <RxCross2 className="w-5 h-5" />
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="overflow-auto px-3 pb-4 pt-2 h-[calc(100%-60px)]">
-                      <p className="text-sm font-semibold py-2">Viewers</p>
-                      {users?.map(user => (
-                        <div
-                          key={user?.id}
-                          className="flex items-center justify-between gap-2 py-1"
-                        >
-                          <div className="flex items-center gap-2">
-                            <ProfileButton name={user?.name} />
-                            <p className="text-sm">{user?.name}</p>
-                          </div>
-                          <div className="flex items-center gap-3 text-gray-500">
-                            <IoEllipsisVertical className="w-5 h-5" />
-                            <BiSolidShare className="w-5 h-5" />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </>
+                <Viewercount
+                  panelHeight={panelHeight}
+                  setPanelHeight={setPanelHeight}
+                  dragStartY={dragStartY}
+                  setDragStartY={setDragStartY}
+                  startHeight={startHeight}
+                  setStartHeight={setStartHeight}
+                  setIsCountOpen={setIsCountOpen}
+                  users={users}
+                  likedPostIds={likedPostIds}
+                />
               )}
             </div>
           </div>
