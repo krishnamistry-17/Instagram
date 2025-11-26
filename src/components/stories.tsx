@@ -6,8 +6,8 @@ import { IoAdd } from "react-icons/io5"
 import exampleVideo from "../images/videos/example.mp4"
 import { MdVolumeOff, MdVolumeUp, MdPause, MdPlayArrow } from "react-icons/md"
 import { IoEye } from "react-icons/io5"
-
 import { imageComponents } from "./storymedia"
+import { storiesData } from "./storiesData"
 import { MdFavorite } from "react-icons/md"
 import { MdFavoriteBorder } from "react-icons/md"
 import { Viewercount } from "./viewercount"
@@ -33,54 +33,19 @@ const Stories: React.FC = () => {
   const [isImage, setIsImage] = React.useState<boolean>(false)
   const [isVideo, setIsVideo] = React.useState<boolean>(false)
 
-  const slidesByStory = React.useMemo(
-    () => [
-      [
-        { type: "image", id: "image1" as const },
-        { type: "image", id: "image3" as const },
-        { type: "image", id: "image4" as const },
-        { type: "video", id: "video1" as const },
-      ],
-      [
-        { type: "image", id: "image2" as const },
-        { type: "image", id: "image3" as const },
-        { type: "video", id: "video1" as const },
-        { type: "image", id: "image4" as const },
-      ],
-      [
-        { type: "image", id: "image1" as const },
-        { type: "image", id: "image3" as const },
-        { type: "video", id: "video1" as const },
-        { type: "image", id: "image4" as const },
-      ],
-      [{ type: "image", id: "image1" as const }],
-      [{ type: "image", id: "image2" as const }],
-      [{ type: "video", id: "video1" as const }],
-      [{ type: "image", id: "image3" as const }],
-      [{ type: "image", id: "image4" as const }],
-      [
-        { type: "image", id: "image5" as const },
-        { type: "image", id: "image6" as const },
-        { type: "image", id: "image7" as const },
-      ],
-      [{ type: "image", id: "image8" as const }],
-      [{ type: "image", id: "image9" as const }],
-      [{ type: "image", id: "image10" as const }],
-    ],
-    []
-  )
+  const slidesByStory = React.useMemo(() => storiesData.map(s => s.slides), [])
 
   const [isOpen, setIsOpen] = React.useState(false)
   const [isCountOpen, setIsCountOpen] = React.useState(false)
   const [currentStory, setCurrentStory] = React.useState(0)
-  console.log("currentStory", currentStory)
   const [currentSlide, setCurrentSlide] = React.useState(0)
-  console.log("currentSlide", currentSlide)
   const [progress, setProgress] = React.useState(0)
   const [rotating, setRotating] = React.useState<Record<number, boolean>>({})
   const [angles, setAngles] = React.useState<Record<number, number>>({})
-  const [likedPostIds, setLikedPostIds] = React.useState<number | null>(null)
-  console.log("likedPostIds", likedPostIds)
+  const [likedSlides, setLikedSlides] = React.useState<{
+    [key: string]: string[]
+  }>({})
+
   const [openingIdx, setOpeningIdx] = React.useState<number | null>(null)
   const videoRef = React.useRef<HTMLVideoElement | null>(null)
   const imageRef = React.useRef<HTMLImageElement | null>(null)
@@ -95,6 +60,32 @@ const Stories: React.FC = () => {
 
   const [dragStartY, setDragStartY] = React.useState<number | null>(null)
   const [startHeight, setStartHeight] = React.useState<number>(MIN_HEIGHT)
+
+  const currentSlideKey = React.useMemo(() => {
+    const story = storiesData[currentStory]
+    const slide = slidesByStory[currentStory]?.[currentSlide]
+    if (!story || !slide) return null
+    return `${story.id}:${slide.id}`
+  }, [currentStory, currentSlide, slidesByStory])
+
+  React.useEffect(() => {
+    if (typeof window === "undefined") return
+    try {
+      const raw = window.localStorage.getItem("likedSlides")
+      if (raw) {
+        const parsed = JSON.parse(raw) as { [key: string]: string[] }
+        if (parsed && typeof parsed === "object") {
+          setLikedSlides(parsed)
+        }
+      }
+    } catch {}
+  }, [])
+  React.useEffect(() => {
+    if (typeof window === "undefined") return
+    try {
+      window.localStorage.setItem("likedSlides", JSON.stringify(likedSlides))
+    } catch {}
+  }, [likedSlides])
 
   React.useEffect(() => {
     if (!isOpen) return
@@ -301,7 +292,6 @@ const Stories: React.FC = () => {
     }
   }, [isOpen, currentStory, currentSlide, isHolding, isCountOpen])
 
-  // Pause/resume video when viewers panel opens/closes
   React.useEffect(() => {
     const v = videoRef.current
     if (!v) return
@@ -318,7 +308,6 @@ const Stories: React.FC = () => {
     }
   }, [isCountOpen, isOpen, isVideo])
 
-  // Individual circle rotation effect
   React.useEffect(() => {
     const activeUserIds = Object.keys(rotating).filter(
       id => rotating[parseInt(id)]
@@ -357,6 +346,7 @@ const Stories: React.FC = () => {
 
   const handleNextSlide = () => {
     const slides = slidesByStory[currentStory]
+    if (!slides) return
     if (currentSlide < slides.length - 1) {
       setCurrentSlide(prev => prev + 1)
       setProgress(0)
@@ -375,7 +365,8 @@ const Stories: React.FC = () => {
   }
 
   const goNext = () => {
-    const slides = slidesByStory[currentStory] //from the current slide get the all story of this slide
+    const slides = slidesByStory[currentStory]
+    if (!slides) return
     if (currentSlide < slides.length - 1) {
       setCurrentSlide(s => s + 1)
       setProgress(0)
@@ -384,7 +375,6 @@ const Stories: React.FC = () => {
     }
   }
 
-  // prevents multiple moves on mobile
   const lastNavAtRef = React.useRef<number>(0)
   const safeGoPrev = () => {
     const now = Date.now()
@@ -421,7 +411,6 @@ const Stories: React.FC = () => {
     }
   }
 
-  // Double-tap handling
   const lastTapTimeRef = React.useRef<number>(0)
   const tapZoneTimerRef = React.useRef<number | null>(null)
   const handleTapZoneTouchEnd =
@@ -434,7 +423,6 @@ const Stories: React.FC = () => {
         togglePlay()
         return
       }
-      // Start single-tap timer; if no second tap within window, navigate
       tapZoneTimerRef.current = window.setTimeout(() => {
         if (side === "left") {
           safeGoPrev()
@@ -447,7 +435,6 @@ const Stories: React.FC = () => {
 
   const handleMediaTouchEnd = (e: React.TouchEvent) => {
     if (isHolding) {
-      // If we were holding, end hold and do not treat as tap
       endHold()
       return
     }
@@ -469,13 +456,11 @@ const Stories: React.FC = () => {
     }
     holdTimeoutRef.current = window.setTimeout(() => {
       setIsHolding(true)
-      // Pause video
       if (isVideo && videoRef.current) {
         try {
           videoRef.current.pause()
         } catch {}
       }
-      // Timer pause handled by effect via isHolding
     }, 250)
   }
 
@@ -486,7 +471,6 @@ const Stories: React.FC = () => {
     }
     if (isHolding) {
       setIsHolding(false)
-      // Resume video
       if (isVideo && videoRef.current) {
         try {
           videoRef.current.play()
@@ -494,7 +478,6 @@ const Stories: React.FC = () => {
       } else if (isImage && imageRef.current) {
         imageRef.current.src = imageRef.current.src
       }
-      // Progress resume handled by effect on isHolding change
     }
   }
 
@@ -522,7 +505,7 @@ const Stories: React.FC = () => {
                       style={
                         {
                           "--ring": "3px",
-                          animationDuration: "0.5s",
+                          animationDuration: "0.2s",
                         } as React.CSSProperties
                       }
                       onAnimationEnd={() => handleRingEnd(idx)}
@@ -591,10 +574,8 @@ const Stories: React.FC = () => {
               sm:w-[min(93vw,calc(99vh*0.5625))]
               sm:aspect-9/16"
             >
-              {/* Media */}
               {(() => {
                 const slide = slidesByStory[currentStory][currentSlide]
-                console.log("slide", slide)
 
                 if (!slide) return null
                 if (slide.type === "video") {
@@ -668,7 +649,7 @@ const Stories: React.FC = () => {
                 }}
                 onTouchEnd={e => {
                   const wasHolding = isHolding
-                  console.log("wasHolding", wasHolding)
+
                   endHold()
                   if (wasHolding) {
                     e.preventDefault()
@@ -759,21 +740,35 @@ const Stories: React.FC = () => {
                 aria-label="Viewers"
               >
                 <IoEye className="w-4 h-4" />
-                <span>5</span>
+                <span>10</span>
               </button>
-              {!isVideo && (
+              {!isVideo && currentSlideKey && (
                 <button
-                  onClick={() => setLikedPostIds(currentStory)}
-                  aria-pressed={likedPostIds === currentStory}
+                  onClick={() => {
+                    const username = "you" // dynamic if you have auth
+                    setLikedSlides(prev => {
+                      const users = prev[currentSlideKey] || []
+                      const alreadyLiked = users.includes(username)
+
+                      return {
+                        ...prev,
+                        [currentSlideKey]: alreadyLiked
+                          ? users.filter(u => u !== username)
+                          : [...users, username],
+                      }
+                    })
+                  }}
+                  aria-pressed={likedSlides[currentSlideKey]?.includes("you")}
                   className="absolute bottom-3 right-3 z-10 bg-white/30 text-white text-xs p-2 rounded-full backdrop-blur-sm flex items-center gap-1"
                 >
-                  {likedPostIds === currentStory ? (
+                  {likedSlides[currentSlideKey]?.includes("you") ? (
                     <MdFavorite className="w-5 h-5 text-red-500" />
                   ) : (
                     <MdFavoriteBorder className="w-5 h-5 text-gray-700" />
                   )}
                 </button>
               )}
+
               {isCountOpen && (
                 <Viewercount
                   panelHeight={panelHeight}
@@ -784,7 +779,10 @@ const Stories: React.FC = () => {
                   setStartHeight={setStartHeight}
                   setIsCountOpen={setIsCountOpen}
                   users={users}
-                  likedPostIds={likedPostIds}
+                  likedSlides={likedSlides}
+                  currentStory={currentStory}
+                  currentSlide={currentSlide}
+                  ownerName={users[currentStory]?.name}
                 />
               )}
             </div>

@@ -83,7 +83,6 @@ const Content: React.FC = () => {
     setPosts(prev => prev.filter(p => p.userName !== userName))
   }
   const handleUnfollowUser = (userName: string) => {
-    // Demo behavior: treat as mute + hide current user's posts
     handleMuteUser(userName)
   }
   const toggleComments = (id: number) => {
@@ -323,15 +322,17 @@ const Content: React.FC = () => {
                     action.
                   </p>
                   <div className="mt-3 grid gap-2">
-                    {["Spam", "Nudity", "Hate speech", "Scam"].map(reason => (
-                      <button
-                        key={reason}
-                        className="w-full text-left px-3 py-2 rounded hover:bg-gray-50 border border-gray-100"
-                        onClick={() => setReportPostId(null)}
-                      >
-                        {reason}
-                      </button>
-                    ))}
+                    {["Spam", "Blocked account", "Hate speech", "Scam"].map(
+                      reason => (
+                        <button
+                          key={reason}
+                          className="w-full text-left px-3 py-2 rounded hover:bg-gray-50 border border-gray-100"
+                          onClick={() => setReportPostId(null)}
+                        >
+                          {reason}
+                        </button>
+                      )
+                    )}
                   </div>
                 </div>
               </div>

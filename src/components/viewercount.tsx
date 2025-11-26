@@ -7,6 +7,8 @@ import { MdDelete } from "react-icons/md"
 import { RxCross2 } from "react-icons/rx"
 import { IoEllipsisVertical } from "react-icons/io5"
 import { MdFavorite } from "react-icons/md"
+import { storiesData } from "./storiesData"
+
 export const Viewercount: React.FC<{
   panelHeight: number
   setPanelHeight: (height: number) => void
@@ -16,7 +18,10 @@ export const Viewercount: React.FC<{
   startHeight: number
   setStartHeight: (height: number) => void
   users: { id: number; name: string }[]
-  likedPostIds: number | null
+  likedSlides: { [slideKey: string]: string[] }
+  currentStory: number
+  currentSlide: number
+  ownerName: string
 }> = ({
   panelHeight,
   setPanelHeight,
@@ -26,7 +31,10 @@ export const Viewercount: React.FC<{
   setStartHeight,
   setIsCountOpen,
   users,
-  likedPostIds,
+  likedSlides,
+  currentStory,
+  currentSlide,
+  ownerName,
 }) => {
   const MIN_HEIGHT = 230
   const MAX_HEIGHT = 400
@@ -75,6 +83,25 @@ export const Viewercount: React.FC<{
 
     setDragStartY(null)
   }
+
+  const currentKey = React.useMemo(() => {
+    const story = storiesData[currentStory]
+    const slide = story?.slides[currentSlide]
+    if (!story || !slide) return null
+    return `${story.id}:${slide.id}`
+  }, [currentStory, currentSlide])
+
+  const likedCountForStory = React.useMemo(() => {
+    const story = storiesData[currentStory]
+    if (!story) return 0
+
+    let count = 0
+    for (const slide of story.slides) {
+      const key = `${story.id}:${slide.id}`
+      if (likedSlides[key]?.length > 0) count++
+    }
+    return count
+  }, [currentStory, likedSlides])
 
   return (
     <>
@@ -137,11 +164,19 @@ export const Viewercount: React.FC<{
                 <IoEllipsisVertical className="w-5 h-5" />
                 <BiSolidShare className="w-5 h-5" />
               </div>
-              {likedPostIds === user?.id && (
-                <div className="absolute top-7 left-6">
-                  <MdFavorite className="w-4 h-4 text-red-500 " />
-                </div>
-              )}
+              {(() => {
+                const story = storiesData[currentStory]
+                const slide = story.slides[currentSlide]
+                const key = `${story.id}:${slide.id}`
+                const likedUsers = likedSlides[key] || []
+                if (user.name === ownerName && likedUsers.includes("you")) {
+                  return (
+                    <MdFavorite className="w-4 h-4 text-red-500 absolute top-7 left-6" />
+                  )
+                }
+
+                return null
+              })()}
             </div>
           ))}
         </div>
