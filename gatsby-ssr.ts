@@ -1,7 +1,14 @@
-import "./src/styles/global.css"
+import * as React from "react"
 import { LikesProvider } from "./src/context/likesContext"
 import { StoryProvider } from "./src/context/storyContext"
-import * as React from "react"
+
+export const onRenderBody = ({
+  setHtmlAttributes,
+}: {
+  setHtmlAttributes: (attributes: { lang: string }) => void
+}) => {
+  setHtmlAttributes({ lang: `en` })
+}
 
 export const wrapRootElement = ({ element }: { element: React.ReactNode }) => {
   return React.createElement(

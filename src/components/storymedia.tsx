@@ -1,5 +1,6 @@
 import { StaticImage } from "gatsby-plugin-image"
 import * as React from "react"
+import exampleVideo from "../images/videos/example.mp4"
 
 export const imageComponents: Record<string, JSX.Element> = {
   image1: (
@@ -72,4 +73,8 @@ export const imageComponents: Record<string, JSX.Element> = {
       className="w-full h-full object-cover"
     />
   ),
+}
+
+export const videoComponents: Record<string, JSX.Element> = {
+  video1: <video src={exampleVideo} className="w-full h-full object-cover" />,
 }

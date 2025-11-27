@@ -169,7 +169,7 @@ export const Viewercount: React.FC<{
               {(() => {
                 const story = storiesData[currentStory]
                 const slide = story.slides[currentSlide]
-                const key = makeSlideKey(story.id, slide.id)
+                const key = makeSlideKey(story.id, slide?.id || "")
                 const likedUsers = likedSlides[key] || []
                 if (
                   user.name === ownerName &&

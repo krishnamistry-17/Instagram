@@ -7,6 +7,7 @@ import { IoMdMenu } from "react-icons/io"
 import { StaticImage } from "gatsby-plugin-image"
 import { IoSearch } from "react-icons/io5"
 import Menu from "./menu"
+import { FaCamera } from "react-icons/fa"
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false)
@@ -18,14 +19,19 @@ const Header: React.FC = () => {
   return (
     <header className="sticky top-0 z-50 bg-linear-to-r from-fuchsia-600 via-rose-500 to-amber-400 text-white">
       <div className="mx-auto px-6 py-4 flex items-center justify-between">
-        <Link to="/">
-          {" "}
-          <StaticImage
-            src="../images/logo.png"
-            className="w-8 h-8 "
-            alt="logo"
-          />
-        </Link>
+        <div className="sm:block hidden">
+          <Link to="/">
+            {" "}
+            <StaticImage
+              src="../images/logo.png"
+              className="w-8 h-8 "
+              alt="logo"
+            />
+          </Link>
+        </div>
+        <div className="sm:hidden block">
+          <FaCamera className="text-xl text-white" />
+        </div>
         <div className="flex-1 sm:flex hidden justify-center px-4">
           <div
             className={`relative w-full max-w-md transition-all duration-200 
@@ -56,13 +62,13 @@ const Header: React.FC = () => {
           >
             <IoSearch className="w-5 h-5 text-white" />
           </button>
-          <Link to="/" className=" ">
+          <Link to="/" className="sm:block hidden">
             <FaHouse className="text-md text-white" />
           </Link>
           <Link to="/chats" className=" ">
             <BsFillChatDotsFill className="text-md text-white" />
           </Link>
-          <Link to="/favorites" className=" ">
+          <Link to="/favorites" className="sm:block hidden">
             <MdFavoriteBorder className="text-xl text-white" />
           </Link>
           <button

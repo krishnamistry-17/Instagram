@@ -1,5 +1,4 @@
 import * as React from "react"
-import { StaticImage } from "gatsby-plugin-image"
 import { RxCross2 } from "react-icons/rx"
 import { MdNavigateNext, MdNavigateBefore } from "react-icons/md"
 import { IoAdd } from "react-icons/io5"
@@ -7,13 +6,14 @@ import exampleVideo from "../images/videos/example.mp4"
 import { MdVolumeOff, MdVolumeUp, MdPause, MdPlayArrow } from "react-icons/md"
 import { IoEye } from "react-icons/io5"
 import { imageComponents } from "./storymedia"
-import { storiesData, renderAvatar } from "./storiesData"
+import { renderAvatar } from "./storiesData"
 import { MdFavorite } from "react-icons/md"
 import { MdFavoriteBorder } from "react-icons/md"
 import { Viewercount } from "./viewercount"
 import { useLikes } from "../context/likesContext"
 import { currentUsername } from "../context/auth"
 import { makeSlideKey } from "../utils/storyKeys"
+import { useStory } from "../context/storyContext"
 
 const Stories: React.FC = () => {
   const users = React.useMemo(
@@ -33,8 +33,20 @@ const Stories: React.FC = () => {
     ],
     []
   )
+  const {
+    allStories,
+    uploads,
+    addUploadsToUser,
+    isStoryUpload,
+    multipleMedia,
+  } = useStory()
 
-  const slidesByStory = React.useMemo(() => storiesData.map(s => s.slides), [])
+  const { likedSlides, toggleLike } = useLikes()
+
+  const slidesByStory = React.useMemo(
+    () => allStories.map(s => s.slides),
+    [allStories]
+  )
 
   const [isImage, setIsImage] = React.useState<boolean>(false)
   const [isVideo, setIsVideo] = React.useState<boolean>(false)
@@ -45,7 +57,7 @@ const Stories: React.FC = () => {
   const [progress, setProgress] = React.useState(0)
   const [rotating, setRotating] = React.useState<Record<number, boolean>>({})
   const [angles, setAngles] = React.useState<Record<number, number>>({})
-  const { likedSlides, toggleLike } = useLikes()
+
   const [openingIdx, setOpeningIdx] = React.useState<number | null>(null)
   const videoRef = React.useRef<HTMLVideoElement | null>(null)
   const imageRef = React.useRef<HTMLImageElement | null>(null)
@@ -54,6 +66,8 @@ const Stories: React.FC = () => {
   const [isPaused, setIsPaused] = React.useState(false)
   const [isHolding, setIsHolding] = React.useState<boolean>(false)
   const holdTimeoutRef = React.useRef<number | null>(null)
+  const swipeStartRef = React.useRef<{ x: number; y: number } | null>(null)
+  const fileInputRef = React.useRef<HTMLInputElement | null>(null)
   const [panelHeight, setPanelHeight] = React.useState(230)
 
   const MIN_HEIGHT = 230
@@ -61,7 +75,7 @@ const Stories: React.FC = () => {
   const [startHeight, setStartHeight] = React.useState<number>(MIN_HEIGHT)
 
   const currentSlideKey = React.useMemo(() => {
-    const story = storiesData[currentStory]
+    const story = allStories[currentStory]
     const slide = slidesByStory[currentStory]?.[currentSlide]
     if (!story || !slide) return null
     return makeSlideKey(story.id, slide.id)
@@ -77,6 +91,7 @@ const Stories: React.FC = () => {
 
   React.useEffect(() => {
     const slide = slidesByStory[currentStory][currentSlide]
+
     if (!isOpen || !slide || slide.type !== "video") return
     const v = videoRef.current
     if (!v) return
@@ -99,6 +114,11 @@ const Stories: React.FC = () => {
 
   const handleCircleClick = (idx: number) => {
     if (openingIdx !== null || isOpen) return
+    // If "you" (index 0) has no stories yet, open file picker instead
+    if (idx === 0 && (slidesByStory[idx]?.length ?? 0) === 0) {
+      fileInputRef.current?.click()
+      return
+    }
     setOpeningIdx(idx)
   }
 
@@ -125,6 +145,33 @@ const Stories: React.FC = () => {
       }
       setIsPaused(false)
       setIsMuted(true)
+      return
+    }
+    // Prevent background scroll and key scroll while story is open
+    const preventDefault = (e: Event) => {
+      if (typeof (e as any).preventDefault === "function") {
+        ;(e as any).preventDefault()
+      }
+    }
+    const preventKeyScroll = (e: KeyboardEvent) => {
+      const blocked =
+        e.key === " " ||
+        e.key === "Spacebar" ||
+        e.key === "PageUp" ||
+        e.key === "PageDown" ||
+        e.key === "ArrowUp" ||
+        e.key === "ArrowDown"
+      if (blocked) {
+        e.preventDefault()
+      }
+    }
+    window.addEventListener("wheel", preventDefault, { passive: false })
+    window.addEventListener("touchmove", preventDefault, { passive: false })
+    window.addEventListener("keydown", preventKeyScroll, { passive: false })
+    return () => {
+      window.removeEventListener("wheel", preventDefault as any)
+      window.removeEventListener("touchmove", preventDefault as any)
+      window.removeEventListener("keydown", preventKeyScroll as any)
     }
   }, [isOpen])
 
@@ -348,9 +395,49 @@ const Stories: React.FC = () => {
     }
   }
 
+  // Swipe up to open viewer count
+  const handleViewerTouchStart = (e: React.TouchEvent) => {
+    const t = e.touches && e.touches[0]
+    if (!t) return
+    swipeStartRef.current = { x: t.clientX, y: t.clientY }
+  }
+  const handleViewerTouchMove = (e: React.TouchEvent) => {
+    if (!swipeStartRef.current || isCountOpen) return
+    const t = e.touches && e.touches[0]
+    if (!t) return
+    const dx = t.clientX - swipeStartRef.current.x
+    const dy = t.clientY - swipeStartRef.current.y
+    // Upward swipe with low horizontal deviation
+    if (dy < -60 && Math.abs(dx) < 80) {
+      setIsCountOpen(true)
+      swipeStartRef.current = null
+    }
+  }
+  const handleViewerTouchEnd = () => {
+    swipeStartRef.current = null
+  }
+
   return (
     <section className="bg-white border border-gray-200 rounded-md md:rounded-xl shadow-sm">
       <div className="px-3 py-3">
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*,video/*"
+          multiple
+          className="hidden"
+          onChange={e => {
+            const files = e.target.files
+            if (!files || files.length === 0) return
+            addUploadsToUser(0, files)
+            if (multipleMedia) {
+              for (let i = 0; i < files.length; i++) {
+                addUploadsToUser(0, [files[i]])
+              }
+            }
+            e.currentTarget.value = ""
+          }}
+        />
         <div className=" grid grid-flow-col-dense gap-0 overflow-x-auto no-scrollbar transition-all duration-150">
           {users.map((user, idx) => (
             <div
@@ -380,12 +467,15 @@ const Stories: React.FC = () => {
                   )}
                   <div className="w-full h-full rounded-full bg-white p-[3px] relative z-20">
                     {renderAvatar(user.name)}
-                    {user.name === "you" && (
+                  </div>
+                  {idx === 0 &&
+                    (slidesByStory[idx]?.length ?? 0) === 0 &&
+                    !isStoryUpload &&
+                    idx === 0 && (
                       <div className=" absolute bottom-1 right-1 w-5 h-5 rounded-full bg-white p-[3px] z-40">
                         <IoAdd className="w-full h-full bg-blue-500 text-white rounded-full" />
                       </div>
                     )}
-                  </div>
                 </div>
               </div>
               <p className="mt-2 text-center text-sm truncate">{user.name}</p>
@@ -435,16 +525,20 @@ const Stories: React.FC = () => {
               h-full               
               sm:w-[min(93vw,calc(99vh*0.5625))]
               sm:aspect-9/16"
+              onTouchStart={handleViewerTouchStart}
+              onTouchMove={handleViewerTouchMove}
+              onTouchEnd={handleViewerTouchEnd}
             >
               {(() => {
-                const slide = slidesByStory[currentStory][currentSlide]
-
+                const slides = slidesByStory[currentStory] || []
+                const slide = slides[currentSlide]
+                const story = allStories[currentStory]
                 if (!slide) return null
                 if (slide.type === "video") {
                   return (
                     <video
                       ref={videoRef}
-                      src={exampleVideo}
+                      src={uploads?.[slide.id] || undefined || exampleVideo}
                       className="w-full h-full object-cover"
                       key={`${currentStory}-${currentSlide}`}
                       autoPlay
@@ -468,18 +562,32 @@ const Stories: React.FC = () => {
                     />
                   )
                 }
+
                 // image slide
                 if (slide.type === "image") {
-                  return React.cloneElement(imageComponents[slide.id], {
-                    onTouchStart: startHold,
-                    onTouchEnd: endHold,
-                  })
+                  const comp = imageComponents[slide.id]
+                  if (comp) {
+                    return React.cloneElement(comp, {
+                      onTouchStart: startHold,
+                      onTouchEnd: endHold,
+                    })
+                  }
+                  const src = uploads?.[slide.id]
+                  return (
+                    <img
+                      src={src}
+                      alt={slide.id}
+                      className="w-full h-full object-cover"
+                      onTouchStart={startHold}
+                      onTouchEnd={endHold}
+                    />
+                  )
                 }
               })()}
 
               {/* In-card progress bar */}
               <div className="absolute top-0 left-0 right-0 z-10 flex gap-1 ">
-                {slidesByStory[currentStory].map((_, i) => (
+                {(slidesByStory[currentStory] || []).map((_, i) => (
                   <div key={i} className="flex-1 h-[2px] rounded">
                     <div
                       className="h-full bg-white rounded transition-[width] duration-100"

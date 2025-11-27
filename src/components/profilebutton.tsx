@@ -1,17 +1,37 @@
 import { StaticImage } from "gatsby-plugin-image"
 import * as React from "react"
 
-type Props = { name: string; size?: "sm" | "lg"; liked?: boolean }
+type Props = {
+  name: string
+  size?: "sm" | "lg"
+  liked?: boolean
+  isBottomMenu?: boolean
+}
 
-const ProfileButton: React.FC<Props> = ({ name, size = "" as any }) => {
+const ProfileButton: React.FC<Props> = ({
+  name,
+  size = "" as any,
+  isBottomMenu = false,
+}) => {
   const isBrowser = typeof window !== "undefined"
   const isProfilePage =
     isBrowser && window.location.pathname.startsWith("/profile")
 
-  const isLarge = (size as string) === "lg" || (!size && isProfilePage)
+  const isLarge =
+    (size as string) === "lg" || (!size && isProfilePage) || isBottomMenu
   const outerSize = isLarge ? "w-14 h-14" : "w-10 h-10"
   const imgSize = isLarge ? "w-12 h-12" : "w-8 h-8"
   const imgClass = `${imgSize} rounded-full object-cover`
+
+  if (isBottomMenu) {
+    return (
+      <StaticImage
+        src="../images/image7.png"
+        className="w-10 h-10 rounded-full object-cover"
+        alt={name}
+      />
+    )
+  }
 
   const renderAvatar = (n: string) => {
     if (n === "alice") {

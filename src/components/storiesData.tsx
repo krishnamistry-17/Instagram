@@ -2,20 +2,17 @@ import * as React from "react"
 import { StaticImage } from "gatsby-plugin-image"
 
 export type SlideDef = { id: string; type: "image" | "video" }
-export type StoryDef = { id: string; slides: SlideDef[] }
+export type StoryDef = { id: string; user: string; slides: SlideDef[] }
 
 export const storiesData: StoryDef[] = [
   {
     id: "s1",
-    slides: [
-      { type: "image", id: "image1" },
-      { type: "image", id: "image3" },
-      { type: "image", id: "image4" },
-      { type: "video", id: "video1" },
-    ],
+    user: "you",
+    slides: [],
   },
   {
     id: "s2",
+    user: "alice",
     slides: [
       { type: "image", id: "image2" },
       { type: "image", id: "image3" },
@@ -25,6 +22,7 @@ export const storiesData: StoryDef[] = [
   },
   {
     id: "s3",
+    user: "bob",
     slides: [
       { type: "image", id: "image1" },
       { type: "image", id: "image3" },
@@ -34,6 +32,7 @@ export const storiesData: StoryDef[] = [
   },
   {
     id: "s4",
+    user: "carol",
     slides: [
       { type: "image", id: "image1" },
       { type: "image", id: "image2" },
@@ -42,6 +41,7 @@ export const storiesData: StoryDef[] = [
   },
   {
     id: "s5",
+    user: "dave",
     slides: [
       { type: "image", id: "image2" },
       { type: "image", id: "image3" },
@@ -49,6 +49,7 @@ export const storiesData: StoryDef[] = [
   },
   {
     id: "s6",
+    user: "eve",
     slides: [
       { type: "video", id: "video1" },
       { type: "image", id: "image4" },
@@ -56,6 +57,7 @@ export const storiesData: StoryDef[] = [
   },
   {
     id: "s7",
+    user: "jack",
     slides: [
       { type: "image", id: "image3" },
       { type: "image", id: "image4" },
@@ -64,6 +66,7 @@ export const storiesData: StoryDef[] = [
   },
   {
     id: "s8",
+    user: "lily",
     slides: [
       { type: "image", id: "image4" },
       { type: "image", id: "image5" },
@@ -71,6 +74,7 @@ export const storiesData: StoryDef[] = [
   },
   {
     id: "s9",
+    user: "lucy",
     slides: [
       { type: "image", id: "image8" },
       { type: "image", id: "image9" },
@@ -78,6 +82,7 @@ export const storiesData: StoryDef[] = [
   },
   {
     id: "s10",
+    user: "mary",
     slides: [
       { type: "image", id: "image9" },
       { type: "image", id: "image10" },
@@ -85,10 +90,16 @@ export const storiesData: StoryDef[] = [
   },
   {
     id: "s11",
+    user: "nina",
     slides: [
       { type: "image", id: "image10" },
       { type: "image", id: "image6" },
     ],
+  },
+  {
+    id: "s12",
+    user: "olive",
+    slides: [{ type: "image", id: "image6" }],
   },
 ]
 
