@@ -5,10 +5,10 @@ import { storiesData, renderAvatar } from "./storiesData"
 
 type Props = {
   isOpen: boolean
-  onClose: () => void
-}
+    onClose: () => void
+  }
 
-const SearchMenu: React.FC<Props> = ({ isOpen, onClose }) => {
+  const SearchMenu: React.FC<Props> = ({ isOpen, onClose }) => {
   const [query, setQuery] = React.useState("")
   const [recent, setRecent] = React.useState<string[]>([])
 
@@ -122,6 +122,11 @@ const SearchMenu: React.FC<Props> = ({ isOpen, onClose }) => {
           <p className="text-xs font-semibold text-gray-500 px-3 pt-3 pb-1">
             {query ? "Results" : "Suggested"}
           </p>
+          {results.length === 0 && (
+            <p className="text-xs font-semibold text-gray-500 px-3 pt-3 pb-1 text-center">
+              No result found
+            </p>
+          )}
           <ul className="px-1 pb-6">
             {results.map(({ name }) => (
               <li

@@ -21,7 +21,7 @@ const Header: React.FC = () => {
 
   return (
     <header className="sticky top-0 z-50 bg-linear-to-r from-fuchsia-600 via-rose-500 to-amber-400 text-white">
-      <div className="mx-auto px-6 py-4 flex items-center justify-between">
+      <div className="mx-auto px-6 py-2 flex items-center justify-between">
         <div className="sm:block hidden">
           <Link to="/">
             {" "}

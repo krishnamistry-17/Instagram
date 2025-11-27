@@ -41,7 +41,7 @@ const BottomMenu: React.FC = () => {
           <MdFavoriteBorder className="text-xl" />
         </Link>
         <Link to="/profile">
-          <ProfileButton name="alice" size="sm" isBottomMenu={true} />
+          <ProfileButton name="you" size="sm" isBottomMenu={true} />
         </Link>
       </div>
       {searchOpen && (

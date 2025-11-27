@@ -1,7 +1,7 @@
 import * as React from "react"
 import { RxCross2 } from "react-icons/rx"
 import { MdNavigateNext, MdNavigateBefore } from "react-icons/md"
-import { IoAdd } from "react-icons/io5" 
+import { IoAdd } from "react-icons/io5"
 import exampleVideo from "../images/videos/example.mp4"
 import { MdVolumeOff, MdVolumeUp, MdPause, MdPlayArrow } from "react-icons/md"
 import { IoEye } from "react-icons/io5"
@@ -69,6 +69,7 @@ const Stories: React.FC = () => {
   const swipeStartRef = React.useRef<{ x: number; y: number } | null>(null)
   const fileInputRef = React.useRef<HTMLInputElement | null>(null)
   const [panelHeight, setPanelHeight] = React.useState(230)
+  const justOpenedViewersAtRef = React.useRef<number>(0)
 
   const MIN_HEIGHT = 230
   const [dragStartY, setDragStartY] = React.useState<number | null>(null)
@@ -114,7 +115,6 @@ const Stories: React.FC = () => {
 
   const handleCircleClick = (idx: number) => {
     if (openingIdx !== null || isOpen) return
-    // If "you" (index 0) has no stories yet, open file picker instead
     if (idx === 0 && (slidesByStory[idx]?.length ?? 0) === 0) {
       fileInputRef.current?.click()
       return
@@ -147,7 +147,7 @@ const Stories: React.FC = () => {
       setIsMuted(true)
       return
     }
-    // Prevent background scroll and key scroll while story is open
+
     const preventDefault = (e: Event) => {
       if (typeof (e as any).preventDefault === "function") {
         ;(e as any).preventDefault()
@@ -175,7 +175,6 @@ const Stories: React.FC = () => {
     }
   }, [isOpen])
 
-  // Manage progress per slide (pause when holding or viewers open)
   React.useEffect(() => {
     if (!isOpen) return
     if (imageTimerRef.current) {
@@ -329,6 +328,11 @@ const Stories: React.FC = () => {
   const tapZoneTimerRef = React.useRef<number | null>(null)
   const handleTapZoneTouchEnd =
     (side: "left" | "right") => (e: React.TouchEvent) => {
+      if (Date.now() - justOpenedViewersAtRef.current < 300) {
+        e.preventDefault()
+        e.stopPropagation()
+        return
+      }
       if (tapZoneTimerRef.current !== null) {
         window.clearTimeout(tapZoneTimerRef.current)
         tapZoneTimerRef.current = null
@@ -348,6 +352,11 @@ const Stories: React.FC = () => {
     }
 
   const handleMediaTouchEnd = (e: React.TouchEvent) => {
+    if (Date.now() - justOpenedViewersAtRef.current < 300) {
+      e.preventDefault()
+      e.stopPropagation()
+      return
+    }
     if (isHolding) {
       endHold()
       return
@@ -395,7 +404,6 @@ const Stories: React.FC = () => {
     }
   }
 
-  // Swipe up to open viewer count
   const handleViewerTouchStart = (e: React.TouchEvent) => {
     const t = e.touches && e.touches[0]
     if (!t) return
@@ -407,9 +415,11 @@ const Stories: React.FC = () => {
     if (!t) return
     const dx = t.clientX - swipeStartRef.current.x
     const dy = t.clientY - swipeStartRef.current.y
-    // Upward swipe with low horizontal deviation
     if (dy < -60 && Math.abs(dx) < 80) {
       setIsCountOpen(true)
+      justOpenedViewersAtRef.current = Date.now()
+      e.preventDefault()
+      e.stopPropagation()
       swipeStartRef.current = null
     }
   }
@@ -452,7 +462,6 @@ const Stories: React.FC = () => {
                   {openingIdx !== idx && (
                     <div className="absolute inset-0 rounded-full p-[2px] bg-linear-to-tr from-pink-500 to-yellow-500" />
                   )}
-                  {/* Sweep gradient ring overlay with fixed thickness */}
                   {openingIdx === idx && (
                     <div
                       className="story-ring-rotator story-ring-sweep"
@@ -525,6 +534,7 @@ const Stories: React.FC = () => {
               h-full               
               sm:w-[min(93vw,calc(99vh*0.5625))]
               sm:aspect-9/16"
+              style={{ touchAction: "none" }}
               onTouchStart={handleViewerTouchStart}
               onTouchMove={handleViewerTouchMove}
               onTouchEnd={handleViewerTouchEnd}

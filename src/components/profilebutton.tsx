@@ -26,7 +26,7 @@ const ProfileButton: React.FC<Props> = ({
   if (isBottomMenu) {
     return (
       <StaticImage
-        src="../images/image7.png"
+        src="../images/image5.png"
         className="w-10 h-10 rounded-full object-cover"
         alt={name}
       />
@@ -34,6 +34,11 @@ const ProfileButton: React.FC<Props> = ({
   }
 
   const renderAvatar = (n: string) => {
+    if (n === "you") {
+      return (
+        <StaticImage src="../images/image5.png" className={imgClass} alt={n} />
+      )
+    }
     if (n === "alice") {
       return (
         <StaticImage src="../images/image7.png" className={imgClass} alt={n} />

@@ -29,7 +29,7 @@ const ProfilePage: React.FC = () => {
         <div className="flex items-center gap-6 px-2">
           <div className="flex flex-col items-center justify-center pt-4">
             <div onClick={handleProfile}>
-              <ProfileButton name="alice" size="lg" />
+              <ProfileButton name="you" size="lg" />
             </div>
             <div className="flex flex-col items-center justify-center pb-2">
               <p className="sm:text-2xl text-lg font-bold">{user.name}</p>
