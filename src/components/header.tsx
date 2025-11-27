@@ -8,10 +8,13 @@ import { StaticImage } from "gatsby-plugin-image"
 import { IoSearch } from "react-icons/io5"
 import Menu from "./menu"
 import { FaCamera } from "react-icons/fa"
+import UploadModal from "./uploadModal"
+import { useStory } from "../context/storyContext"
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false)
   const [isSearchOpen, setIsSearchOpen] = React.useState(false)
+  const { isStoryUpload, setIsStoryUpload } = useStory()
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen)
   }
@@ -30,7 +33,13 @@ const Header: React.FC = () => {
           </Link>
         </div>
         <div className="sm:hidden block">
-          <FaCamera className="text-xl text-white" />
+          <button
+            className="p-1"
+            aria-label="Create story"
+            onClick={() => setIsStoryUpload(true)}
+          >
+            <FaCamera className="text-xl text-white" />
+          </button>
         </div>
         <div className="flex-1 sm:flex hidden justify-center px-4">
           <div
@@ -86,6 +95,7 @@ const Header: React.FC = () => {
       {isMenuOpen && (
         <Menu isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
       )}
+      {isStoryUpload && <UploadModal />}
     </header>
   )
 }

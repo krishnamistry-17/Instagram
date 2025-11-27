@@ -4,6 +4,7 @@ import * as React from "react"
 import FindPeopleBox from "../components/findbox"
 import Posts from "../components/posts"
 import ProfileButton from "../components/profilebutton"
+import { StoryDef } from "../components/storiesData"
 
 const ProfilePage: React.FC = () => {
   const [user, setUser] = React.useState({
@@ -15,12 +16,21 @@ const ProfilePage: React.FC = () => {
     posts: 10,
   })
 
+  const handleProfile = () => {
+    const storyData = localStorage.getItem("stories") as string
+    if (!storyData) return
+    const storyDataParsed = JSON.parse(storyData) as StoryDef[]
+    console.log("storyDataParsed", storyDataParsed)
+  }
+
   return (
     <Layout>
       <div className="max-w-2xl mx-auto">
         <div className="flex items-center gap-6 px-2">
           <div className="flex flex-col items-center justify-center pt-4">
-            <ProfileButton name="alice" size="lg" />
+            <div onClick={handleProfile}>
+              <ProfileButton name="alice" size="lg" />
+            </div>
             <div className="flex flex-col items-center justify-center pb-2">
               <p className="sm:text-2xl text-lg font-bold">{user.name}</p>
               <p className="text-sm text-gray-500">{user.username}</p>

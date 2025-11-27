@@ -1,7 +1,7 @@
 import * as React from "react"
 import { RxCross2 } from "react-icons/rx"
 import { MdNavigateNext, MdNavigateBefore } from "react-icons/md"
-import { IoAdd } from "react-icons/io5"
+import { IoAdd } from "react-icons/io5" 
 import exampleVideo from "../images/videos/example.mp4"
 import { MdVolumeOff, MdVolumeUp, MdPause, MdPlayArrow } from "react-icons/md"
 import { IoEye } from "react-icons/io5"

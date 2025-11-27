@@ -7,20 +7,15 @@ import { MdFavoriteBorder } from "react-icons/md"
 import ProfileButton from "./profilebutton"
 import SearchMenu from "./searchMenu"
 import UploadModal from "./uploadModal"
+import { useStory } from "../context/storyContext"
 
 const BottomMenu: React.FC = () => {
   const [searchOpen, setSearchOpen] = React.useState(false)
-  const [uploadOpen, setUploadOpen] = React.useState(false)
+  const { isStoryUpload, setIsStoryUpload } = useStory()
   const toggleSearch = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
     e.stopPropagation()
     setSearchOpen(!searchOpen)
-  }
-
-  const toggleUploadModal = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setUploadOpen(!uploadOpen)
   }
 
   return (
@@ -35,7 +30,11 @@ const BottomMenu: React.FC = () => {
         <button type="button" aria-label="Search" onClick={toggleSearch}>
           <IoSearch className="text-xl " />
         </button>
-        <button className="border rounded-sm" onClick={toggleUploadModal}>
+        <button
+          className="border rounded-sm"
+          onClick={() => setIsStoryUpload(true)}
+          aria-label="Upload"
+        >
           <IoAdd className="text-xl" />
         </button>
         <Link to="/favorites">
@@ -48,7 +47,7 @@ const BottomMenu: React.FC = () => {
       {searchOpen && (
         <SearchMenu isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
       )}
-      {uploadOpen && <UploadModal />}
+      {isStoryUpload && <UploadModal />}
     </div>
   )
 }
