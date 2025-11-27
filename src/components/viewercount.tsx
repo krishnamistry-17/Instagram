@@ -8,6 +8,9 @@ import { RxCross2 } from "react-icons/rx"
 import { IoEllipsisVertical } from "react-icons/io5"
 import { MdFavorite } from "react-icons/md"
 import { storiesData } from "./storiesData"
+import { useLikes } from "../context/likesContext"
+import { currentUsername } from "../context/auth"
+import { makeSlideKey } from "../utils/storyKeys"
 
 export const Viewercount: React.FC<{
   panelHeight: number
@@ -18,7 +21,6 @@ export const Viewercount: React.FC<{
   startHeight: number
   setStartHeight: (height: number) => void
   users: { id: number; name: string }[]
-  likedSlides: { [slideKey: string]: string[] }
   currentStory: number
   currentSlide: number
   ownerName: string
@@ -31,13 +33,13 @@ export const Viewercount: React.FC<{
   setStartHeight,
   setIsCountOpen,
   users,
-  likedSlides,
   currentStory,
   currentSlide,
   ownerName,
 }) => {
   const MIN_HEIGHT = 230
   const MAX_HEIGHT = 400
+  const { likedSlides } = useLikes()
 
   const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
     e.stopPropagation()
@@ -88,7 +90,7 @@ export const Viewercount: React.FC<{
     const story = storiesData[currentStory]
     const slide = story?.slides[currentSlide]
     if (!story || !slide) return null
-    return `${story.id}:${slide.id}`
+    return makeSlideKey(story.id, slide.id)
   }, [currentStory, currentSlide])
 
   const likedCountForStory = React.useMemo(() => {
@@ -97,7 +99,7 @@ export const Viewercount: React.FC<{
 
     let count = 0
     for (const slide of story.slides) {
-      const key = `${story.id}:${slide.id}`
+      const key = makeSlideKey(story.id, slide.id)
       if (likedSlides[key]?.length > 0) count++
     }
     return count
@@ -167,9 +169,12 @@ export const Viewercount: React.FC<{
               {(() => {
                 const story = storiesData[currentStory]
                 const slide = story.slides[currentSlide]
-                const key = `${story.id}:${slide.id}`
+                const key = makeSlideKey(story.id, slide.id)
                 const likedUsers = likedSlides[key] || []
-                if (user.name === ownerName && likedUsers.includes("you")) {
+                if (
+                  user.name === ownerName &&
+                  likedUsers.includes(currentUsername)
+                ) {
                   return (
                     <MdFavorite className="w-4 h-4 text-red-500 absolute top-7 left-6" />
                   )

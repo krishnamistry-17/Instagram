@@ -2,8 +2,8 @@ import * as React from "react"
 import { storiesData } from "../components/storiesData"
 import { imageComponents } from "../components/storymedia"
 import { MdPlayArrow } from "react-icons/md"
-
-type LikedSlidesMap = { [key: string]: string[] }
+import { useLikes } from "../context/likesContext"
+import { currentUsername } from "../context/auth"
 
 const users = [
   { id: 1, name: "you" },
@@ -21,20 +21,7 @@ const users = [
 ]
 
 const FavoritesPage: React.FC = () => {
-  const [liked, setLiked] = React.useState<LikedSlidesMap>({})
-
-  React.useEffect(() => {
-    if (typeof window === "undefined") return
-    try {
-      const raw = window.localStorage.getItem("likedSlides")
-      if (raw) {
-        const parsed = JSON.parse(raw) as LikedSlidesMap
-        if (parsed && typeof parsed === "object") {
-          setLiked(parsed)
-        }
-      }
-    } catch {}
-  }, [])
+  const { likedSlides, toggleLike } = useLikes()
 
   const likedItems = React.useMemo(() => {
     const items: Array<{
@@ -44,8 +31,8 @@ const FavoritesPage: React.FC = () => {
       ownerName: string | undefined
       type: "image" | "video" | undefined
     }> = []
-    for (const [key, usersWhoLiked] of Object.entries(liked)) {
-      if (!usersWhoLiked?.includes("you")) continue
+    for (const [key, usersWhoLiked] of Object.entries(likedSlides)) {
+      if (!usersWhoLiked?.includes(currentUsername)) continue
       const [storyId, slideId] = key.split(":")
       const storyIdx = storiesData.findIndex(s => s.id === storyId)
       const ownerName = users[storyIdx]?.name
@@ -59,7 +46,7 @@ const FavoritesPage: React.FC = () => {
       })
     }
     return items
-  }, [liked])
+  }, [likedSlides])
 
   return (
     <div className="max-w-5xl mx-auto p-4">
@@ -82,8 +69,14 @@ const FavoritesPage: React.FC = () => {
                       "w-15 h-15 object-cover pointer-events-none select-none",
                   })}
                   <div className=" px-2 py-1 mt-auto text-sm font-bold">
-                    {`${item.ownerName} liked your story`}
+                    {`You liked ${item.ownerName}'s story`}
                   </div>
+                  <button
+                    className="ml-auto text-sm text-blue-600 hover:underline px-2"
+                    onClick={() => toggleLike(item.key, currentUsername)}
+                  >
+                    Unlike
+                  </button>
                 </div>
               )
             }

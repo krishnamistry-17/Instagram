@@ -11,6 +11,9 @@ import { storiesData } from "./storiesData"
 import { MdFavorite } from "react-icons/md"
 import { MdFavoriteBorder } from "react-icons/md"
 import { Viewercount } from "./viewercount"
+import { useLikes } from "../context/likesContext"
+import { currentUsername } from "../context/auth"
+import { makeSlideKey } from "../utils/storyKeys"
 
 const Stories: React.FC = () => {
   const users = React.useMemo(
@@ -42,9 +45,7 @@ const Stories: React.FC = () => {
   const [progress, setProgress] = React.useState(0)
   const [rotating, setRotating] = React.useState<Record<number, boolean>>({})
   const [angles, setAngles] = React.useState<Record<number, number>>({})
-  const [likedSlides, setLikedSlides] = React.useState<{
-    [key: string]: string[]
-  }>({})
+  const { likedSlides, toggleLike } = useLikes()
 
   const [openingIdx, setOpeningIdx] = React.useState<number | null>(null)
   const videoRef = React.useRef<HTMLVideoElement | null>(null)
@@ -65,27 +66,8 @@ const Stories: React.FC = () => {
     const story = storiesData[currentStory]
     const slide = slidesByStory[currentStory]?.[currentSlide]
     if (!story || !slide) return null
-    return `${story.id}:${slide.id}`
+    return makeSlideKey(story.id, slide.id)
   }, [currentStory, currentSlide, slidesByStory])
-
-  React.useEffect(() => {
-    if (typeof window === "undefined") return
-    try {
-      const raw = window.localStorage.getItem("likedSlides")
-      if (raw) {
-        const parsed = JSON.parse(raw) as { [key: string]: string[] }
-        if (parsed && typeof parsed === "object") {
-          setLikedSlides(parsed)
-        }
-      }
-    } catch {}
-  }, [])
-  React.useEffect(() => {
-    if (typeof window === "undefined") return
-    try {
-      window.localStorage.setItem("likedSlides", JSON.stringify(likedSlides))
-    } catch {}
-  }, [likedSlides])
 
   React.useEffect(() => {
     if (!isOpen) return
@@ -745,23 +727,14 @@ const Stories: React.FC = () => {
               {!isVideo && currentSlideKey && (
                 <button
                   onClick={() => {
-                    const username = "you" // dynamic if you have auth
-                    setLikedSlides(prev => {
-                      const users = prev[currentSlideKey] || []
-                      const alreadyLiked = users.includes(username)
-
-                      return {
-                        ...prev,
-                        [currentSlideKey]: alreadyLiked
-                          ? users.filter(u => u !== username)
-                          : [...users, username],
-                      }
-                    })
+                    toggleLike(currentSlideKey, currentUsername)
                   }}
-                  aria-pressed={likedSlides[currentSlideKey]?.includes("you")}
+                  aria-pressed={likedSlides[currentSlideKey]?.includes(
+                    currentUsername
+                  )}
                   className="absolute bottom-3 right-3 z-10 bg-white/30 text-white text-xs p-2 rounded-full backdrop-blur-sm flex items-center gap-1"
                 >
-                  {likedSlides[currentSlideKey]?.includes("you") ? (
+                  {likedSlides[currentSlideKey]?.includes(currentUsername) ? (
                     <MdFavorite className="w-5 h-5 text-red-500" />
                   ) : (
                     <MdFavoriteBorder className="w-5 h-5 text-gray-700" />
@@ -779,7 +752,6 @@ const Stories: React.FC = () => {
                   setStartHeight={setStartHeight}
                   setIsCountOpen={setIsCountOpen}
                   users={users}
-                  likedSlides={likedSlides}
                   currentStory={currentStory}
                   currentSlide={currentSlide}
                   ownerName={users[currentStory]?.name}
