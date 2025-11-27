@@ -1,7 +1,7 @@
 import * as React from "react"
 import { storiesData } from "../components/storiesData"
 import { imageComponents } from "../components/storymedia"
-import { MdPlayArrow } from "react-icons/md"
+import { MdFavorite, MdFavoriteBorder, MdPlayArrow } from "react-icons/md"
 import { useLikes } from "../context/likesContext"
 import { currentUsername } from "../context/auth"
 
@@ -71,12 +71,16 @@ const FavoritesPage: React.FC = () => {
                   <div className=" px-2 py-1 mt-auto text-sm font-bold">
                     {`You liked ${item.ownerName}'s story`}
                   </div>
-                  <button
-                    className="ml-auto text-sm text-blue-600 hover:underline px-2"
+                  <div
+                    className=" ml-auto cursor-pointer"
                     onClick={() => toggleLike(item.key, currentUsername)}
                   >
-                    Unlike
-                  </button>
+                    {likedSlides[item.key]?.includes(currentUsername) ? (
+                      <MdFavorite className="w-5 h-5 text-red-500" />
+                    ) : (
+                      <MdFavoriteBorder className="w-5 h-5 text-gray-700" />
+                    )}
+                  </div>
                 </div>
               )
             }

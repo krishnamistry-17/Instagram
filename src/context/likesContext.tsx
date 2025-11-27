@@ -14,7 +14,6 @@ export const LikesProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [likedSlides, setLikedSlides] = React.useState<LikedSlidesMap>({})
 
-  // Load once on client
   React.useEffect(() => {
     if (typeof window === "undefined") return
     try {
@@ -28,7 +27,6 @@ export const LikesProvider: React.FC<{ children: React.ReactNode }> = ({
     } catch {}
   }, [])
 
-  // Persist on change
   React.useEffect(() => {
     if (typeof window === "undefined") return
     try {

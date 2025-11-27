@@ -7,7 +7,7 @@ import exampleVideo from "../images/videos/example.mp4"
 import { MdVolumeOff, MdVolumeUp, MdPause, MdPlayArrow } from "react-icons/md"
 import { IoEye } from "react-icons/io5"
 import { imageComponents } from "./storymedia"
-import { storiesData } from "./storiesData"
+import { storiesData, renderAvatar } from "./storiesData"
 import { MdFavorite } from "react-icons/md"
 import { MdFavoriteBorder } from "react-icons/md"
 import { Viewercount } from "./viewercount"
@@ -33,11 +33,11 @@ const Stories: React.FC = () => {
     ],
     []
   )
-  const [isImage, setIsImage] = React.useState<boolean>(false)
-  const [isVideo, setIsVideo] = React.useState<boolean>(false)
 
   const slidesByStory = React.useMemo(() => storiesData.map(s => s.slides), [])
 
+  const [isImage, setIsImage] = React.useState<boolean>(false)
+  const [isVideo, setIsVideo] = React.useState<boolean>(false)
   const [isOpen, setIsOpen] = React.useState(false)
   const [isCountOpen, setIsCountOpen] = React.useState(false)
   const [currentStory, setCurrentStory] = React.useState(0)
@@ -46,7 +46,6 @@ const Stories: React.FC = () => {
   const [rotating, setRotating] = React.useState<Record<number, boolean>>({})
   const [angles, setAngles] = React.useState<Record<number, number>>({})
   const { likedSlides, toggleLike } = useLikes()
-
   const [openingIdx, setOpeningIdx] = React.useState<number | null>(null)
   const videoRef = React.useRef<HTMLVideoElement | null>(null)
   const imageRef = React.useRef<HTMLImageElement | null>(null)
@@ -55,10 +54,9 @@ const Stories: React.FC = () => {
   const [isPaused, setIsPaused] = React.useState(false)
   const [isHolding, setIsHolding] = React.useState<boolean>(false)
   const holdTimeoutRef = React.useRef<number | null>(null)
-
   const [panelHeight, setPanelHeight] = React.useState(230)
-  const MIN_HEIGHT = 230
 
+  const MIN_HEIGHT = 230
   const [dragStartY, setDragStartY] = React.useState<number | null>(null)
   const [startHeight, setStartHeight] = React.useState<number>(MIN_HEIGHT)
 
@@ -103,6 +101,7 @@ const Stories: React.FC = () => {
     if (openingIdx !== null || isOpen) return
     setOpeningIdx(idx)
   }
+
   const handleRingEnd = (idx: number) => {
     if (openingIdx === idx) {
       setCurrentStory(idx)
@@ -128,120 +127,6 @@ const Stories: React.FC = () => {
       setIsMuted(true)
     }
   }, [isOpen])
-
-  const renderAvatar = (name: string) => {
-    if (name === "you") {
-      return (
-        <StaticImage
-          src="../images/image5.png"
-          className="w-full h-full rounded-full object-cover"
-          alt={name}
-        />
-      )
-    }
-    if (name === "alice") {
-      return (
-        <StaticImage
-          src="../images/image7.png"
-          className="w-full h-full rounded-full object-cover"
-          alt={name}
-        />
-      )
-    }
-    if (name === "bob") {
-      return (
-        <StaticImage
-          src="../images/image6.png"
-          className="w-full h-full rounded-full object-cover"
-          alt={name}
-        />
-      )
-    }
-    if (name === "carol") {
-      return (
-        <StaticImage
-          src="../images/image8.png"
-          className="w-full h-full rounded-full object-cover"
-          alt={name}
-        />
-      )
-    }
-    if (name === "dave") {
-      return (
-        <StaticImage
-          src="../images/image9.png"
-          className="w-full h-full rounded-full object-cover"
-          alt={name}
-        />
-      )
-    }
-    if (name === "eve") {
-      return (
-        <StaticImage
-          src="../images/image10.png"
-          className="w-full h-full rounded-full object-cover"
-          alt={name}
-        />
-      )
-    }
-    if (name === "jack") {
-      return (
-        <StaticImage
-          src="../images/image6.png"
-          className="w-full h-full rounded-full object-cover"
-          alt={name}
-        />
-      )
-    }
-    if (name === "lily") {
-      return (
-        <StaticImage
-          src="../images/image8.png"
-          className="w-full h-full rounded-full object-cover"
-          alt={name}
-        />
-      )
-    }
-    if (name === "lucy") {
-      return (
-        <StaticImage
-          src="../images/image8.png"
-          className="w-full h-full rounded-full object-cover"
-          alt={name}
-        />
-      )
-    }
-    if (name === "mary") {
-      return (
-        <StaticImage
-          src="../images/image9.png"
-          className="w-full h-full rounded-full object-cover"
-          alt={name}
-        />
-      )
-    }
-    if (name === "nina") {
-      return (
-        <StaticImage
-          src="../images/image10.png"
-          className="w-full h-full rounded-full object-cover"
-          alt={name}
-        />
-      )
-    }
-    if (name === "olive") {
-      return (
-        <StaticImage
-          src="../images/image6.png"
-          className="w-full h-full rounded-full object-cover"
-          alt={name}
-        />
-      )
-    }
-    // if (name === "you") {
-    //   return <FaUser className="w-full h-full rounded-full object-cover" />
-    // }
-  }
 
   // Manage progress per slide (pause when holding or viewers open)
   React.useEffect(() => {
@@ -501,11 +386,6 @@ const Stories: React.FC = () => {
                       </div>
                     )}
                   </div>
-                  {user.name === "you" && slidesByStory[idx].length === 0 && (
-                    <div className=" absolute bottom-1 right-1 w-5 h-5 rounded-full bg-white p-[3px] z-40">
-                      <IoAdd className="w-full h-full bg-red-500 text-white rounded-full" />
-                    </div>
-                  )}
                 </div>
               </div>
               <p className="mt-2 text-center text-sm truncate">{user.name}</p>
@@ -672,7 +552,7 @@ const Stories: React.FC = () => {
 
               {isVideo && (
                 <>
-                  <div className="absolute bottom-3 right-3 z-10 flex flex-col items-center gap-2">
+                  <div className="absolute bottom-15 right-3 z-10 flex flex-col items-center gap-2">
                     <button
                       className="bg-white/30 text-white rounded-full p-2"
                       onClick={toggleMute}
@@ -724,7 +604,7 @@ const Stories: React.FC = () => {
                 <IoEye className="w-4 h-4" />
                 <span>10</span>
               </button>
-              {!isVideo && currentSlideKey && (
+              {currentSlideKey && (
                 <button
                   onClick={() => {
                     toggleLike(currentSlideKey, currentUsername)
