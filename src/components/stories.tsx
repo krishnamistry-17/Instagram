@@ -3,17 +3,22 @@ import { RxCross2 } from "react-icons/rx"
 import { MdNavigateNext, MdNavigateBefore } from "react-icons/md"
 import { IoAdd } from "react-icons/io5"
 import exampleVideo from "../images/videos/example.mp4"
+import video1 from "../images/videos/video1.mp4"
 import { MdVolumeOff, MdVolumeUp, MdPause, MdPlayArrow } from "react-icons/md"
 import { IoEye } from "react-icons/io5"
 import { imageComponents } from "./storymedia"
 import { renderAvatar } from "./storiesData"
 import { MdFavorite } from "react-icons/md"
 import { MdFavoriteBorder } from "react-icons/md"
-import { Viewercount } from "./viewercount"
 import { useLikes } from "../context/likesContext"
 import { currentUsername } from "../context/auth"
 import { makeSlideKey } from "../utils/storyKeys"
 import { useStory } from "../context/storyContext"
+import StoryDataSync from "./StoryDataSync"
+
+const ViewercountLazy = React.lazy(() =>
+  import("./viewercount").then(m => ({ default: m.Viewercount }))
+)
 
 const Stories: React.FC = () => {
   const users = React.useMemo(
@@ -361,6 +366,20 @@ const Stories: React.FC = () => {
       endHold()
       return
     }
+
+    if (isVideo && isMuted) {
+      e.preventDefault()
+      e.stopPropagation()
+      setIsMuted(false)
+      if (videoRef.current) {
+        try {
+          videoRef.current.muted = false
+          videoRef.current.play().catch(() => {})
+        } catch {}
+      }
+      lastTapTimeRef.current = 0
+      return
+    }
     const now = Date.now()
     if (now - lastTapTimeRef.current < 300) {
       e.preventDefault()
@@ -429,6 +448,7 @@ const Stories: React.FC = () => {
 
   return (
     <section className="bg-white border border-gray-200 rounded-md md:rounded-xl shadow-sm">
+      <StoryDataSync />
       <div className="px-3 py-3">
         <input
           ref={fileInputRef}
@@ -445,7 +465,7 @@ const Stories: React.FC = () => {
                 addUploadsToUser(0, [files[i]])
               }
             }
-            e.currentTarget.value = ""
+            if (fileInputRef.current) fileInputRef.current.value = ""
           }}
         />
         <div className=" grid grid-flow-col-dense gap-0 overflow-x-auto no-scrollbar transition-all duration-150">
@@ -548,7 +568,7 @@ const Stories: React.FC = () => {
                   return (
                     <video
                       ref={videoRef}
-                      src={uploads?.[slide.id] || undefined || exampleVideo}
+                      src={uploads?.[slide.id] || undefined || video1}
                       className="w-full h-full object-cover"
                       key={`${currentStory}-${currentSlide}`}
                       autoPlay
@@ -741,19 +761,21 @@ const Stories: React.FC = () => {
               )}
 
               {isCountOpen && (
-                <Viewercount
-                  panelHeight={panelHeight}
-                  setPanelHeight={setPanelHeight}
-                  dragStartY={dragStartY}
-                  setDragStartY={setDragStartY}
-                  startHeight={startHeight}
-                  setStartHeight={setStartHeight}
-                  setIsCountOpen={setIsCountOpen}
-                  users={users}
-                  currentStory={currentStory}
-                  currentSlide={currentSlide}
-                  ownerName={users[currentStory]?.name}
-                />
+                <React.Suspense fallback={null}>
+                  <ViewercountLazy
+                    panelHeight={panelHeight}
+                    setPanelHeight={setPanelHeight}
+                    dragStartY={dragStartY}
+                    setDragStartY={setDragStartY}
+                    startHeight={startHeight}
+                    setStartHeight={setStartHeight}
+                    setIsCountOpen={setIsCountOpen}
+                    users={users}
+                    currentStory={currentStory}
+                    currentSlide={currentSlide}
+                    ownerName={users[currentStory]?.name}
+                  />
+                </React.Suspense>
               )}
             </div>
           </div>

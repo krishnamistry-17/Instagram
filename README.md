@@ -97,3 +97,23 @@ Looking for more guidance? Full documentation for Gatsby lives [on the website](
 The fastest way to combine your favorite tools and APIs to build the fastest sites, stores, and apps for the web. And also the best place to build, deploy, and host your Gatsby sites.
 
 <!-- AUTO-GENERATED-CONTENT:END -->
+
+## Supabase Setup
+
+1. Install dependencies (already added):
+   - `@supabase/supabase-js`
+2. Supabase client is available at `src/lib/supabse.ts`. Import it where needed:
+
+```ts
+import { supabase } from "../lib/supabse"
+```
+
+3. Create environment files locally (not committed):
+   - Create `.env.development` and `.env.production` in the project root with:
+
+```
+GATSBY_SUPABASE_URL=https://your-project-ref.supabase.co
+GATSBY_SUPABASE_ANON_KEY=your-anon-key
+```
+
+Note: Gatsby requires client-exposed env vars to be prefixed with `GATSBY_`.

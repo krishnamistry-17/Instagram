@@ -17,11 +17,26 @@ export default {
       options: {
         gatsbyRemarkPlugins: [
           {
-            resolve: "gatsby-remark-images", //image support in markdown/mdx
+            resolve: "gatsby-remark-images", //image support in mdx
             options: {
               maxWidth: 800,
               linkImagesToOriginal: false,
             },
+          },
+        ],
+      },
+    },
+
+    {
+      resolve: "gatsby-source-supabase",
+      options: {
+        supabaseUrl: process.env.GATSBY_SUPABASE_URL,
+        supabaseKey: process.env.GATSBY_SUPABASE_ANON_KEY,
+        types: [
+          {
+            type: "Story",
+            query: (client: any) =>
+              client.from("stories").select(`id,created_at,user_id`),
           },
         ],
       },

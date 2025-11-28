@@ -18,7 +18,7 @@ export const StoryProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [allStories, setAllStories] = React.useState<StoryDef[]>(storiesData)
   const [uploads, setUploads] = React.useState<{ [id: string]: string }>({})
-  console.log("uploads", uploads)
+
   const [isStoryUpload, setIsStoryUpload] = React.useState(false)
   const [multipleMedia, setMultipleMedia] = React.useState<boolean>(false)
 

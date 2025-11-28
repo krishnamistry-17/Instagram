@@ -16,11 +16,18 @@ const ProfilePage: React.FC = () => {
     posts: 10,
   })
 
+  React.useEffect(() => {
+    if (typeof window === "undefined") return
+    try {
+      localStorage.setItem("profile_user", JSON.stringify(user))
+    } catch {}
+  }, [user])
+
   const handleProfile = () => {
     const storyData = localStorage.getItem("stories") as string
     if (!storyData) return
     const storyDataParsed = JSON.parse(storyData) as StoryDef[]
-    console.log("storyDataParsed", storyDataParsed)
+   
   }
 
   return (
