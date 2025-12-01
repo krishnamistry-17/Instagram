@@ -1,4 +1,10 @@
 //gatsby-config.ts
+
+require("dotenv").config()
+
+const supabaseUrl = process.env.GATSBY_SUPABASE_URL
+const supabaseKey = process.env.GATSBY_SUPABASE_ANON_KEY
+
 export default {
   siteMetadata: {
     //define the site metadata
@@ -27,19 +33,23 @@ export default {
       },
     },
 
-    {
-      resolve: "gatsby-source-supabase",
-      options: {
-        supabaseUrl: process.env.GATSBY_SUPABASE_URL,
-        supabaseKey: process.env.GATSBY_SUPABASE_ANON_KEY,
-        types: [
+    ...(supabaseUrl && supabaseKey
+      ? [
           {
-            type: "Story",
-            query: (client: any) =>
-              client.from("stories").select(`id,created_at,user_id`),
+            resolve: "gatsby-source-supabase",
+            options: {
+              supabaseUrl,
+              supabaseKey,
+              types: [
+                {
+                  type: "Story",
+                  query: (client: any) =>
+                    client.from("stories").select(`id,created_at,user_id`),
+                },
+              ],
+            },
           },
-        ],
-      },
-    },
+        ]
+      : []),
   ],
 }

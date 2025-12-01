@@ -9,6 +9,8 @@ type StoryContextValue = {
   isStoryUpload: boolean
   setIsStoryUpload: (isUpload: boolean) => void
   multipleMedia: boolean
+  isItTakeTime: boolean
+  setIsItTakeTime: (isTakeTime: boolean) => void
 }
 
 const StoryContext = React.createContext<StoryContextValue | null>(null)
@@ -18,9 +20,9 @@ export const StoryProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [allStories, setAllStories] = React.useState<StoryDef[]>(storiesData)
   const [uploads, setUploads] = React.useState<{ [id: string]: string }>({})
-
   const [isStoryUpload, setIsStoryUpload] = React.useState(false)
   const [multipleMedia, setMultipleMedia] = React.useState<boolean>(false)
+  const [isItTakeTime, setIsItTakeTime] = React.useState(false)
 
   const addUploadsToUser = React.useCallback(
     (userIndex: number, files: FileList | File[]) => {
@@ -48,7 +50,12 @@ export const StoryProvider: React.FC<{ children: React.ReactNode }> = ({
         })
         setMultipleMedia(true)
       }
-
+      if (isStoryUpload) {
+        setIsItTakeTime(true)
+        setTimeout(() => {
+          setIsItTakeTime(false)
+        }, 1000)
+      }
       setUploads(prev => ({ ...prev, ...newUploads }))
       setAllStories(prev => {
         const next = [...prev]
@@ -81,6 +88,8 @@ export const StoryProvider: React.FC<{ children: React.ReactNode }> = ({
         isStoryUpload,
         setIsStoryUpload,
         multipleMedia,
+        isItTakeTime,
+        setIsItTakeTime,
       }}
     >
       {children}

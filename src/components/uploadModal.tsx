@@ -8,7 +8,7 @@ import { FaCamera } from "react-icons/fa"
 const UploadModal: React.FC = () => {
   const fileInputRef = React.useRef<HTMLInputElement | null>(null)
   const cameraInputRef = React.useRef<HTMLInputElement | null>(null)
-
+  const { isItTakeTime, setIsItTakeTime } = useStory()
   const { addUploadsToUser, multipleMedia, isStoryUpload, setIsStoryUpload } =
     useStory()
 
@@ -18,11 +18,13 @@ const UploadModal: React.FC = () => {
     const files = e.target.files
     if (!files || files.length === 0) return
     addUploadsToUser(0, files)
+    setIsItTakeTime(true)
     if (multipleMedia) {
       for (let i = 0; i < files.length; i++) {
         addUploadsToUser(0, [files[i]])
       }
     }
+    setIsItTakeTime(false)
     e.currentTarget.value = ""
     setIsStoryUpload(false)
   }

@@ -2,7 +2,6 @@ import * as React from "react"
 import { RxCross2 } from "react-icons/rx"
 import { MdNavigateNext, MdNavigateBefore } from "react-icons/md"
 import { IoAdd } from "react-icons/io5"
-import exampleVideo from "../images/videos/example.mp4"
 import video1 from "../images/videos/video1.mp4"
 import { MdVolumeOff, MdVolumeUp, MdPause, MdPlayArrow } from "react-icons/md"
 import { IoEye } from "react-icons/io5"
@@ -15,6 +14,7 @@ import { currentUsername } from "../context/auth"
 import { makeSlideKey } from "../utils/storyKeys"
 import { useStory } from "../context/storyContext"
 import StoryDataSync from "./StoryDataSync"
+import { uploadStory } from "../lib/uploadMedia"
 
 const ViewercountLazy = React.lazy(() =>
   import("./viewercount").then(m => ({ default: m.Viewercount }))
@@ -44,6 +44,8 @@ const Stories: React.FC = () => {
     addUploadsToUser,
     isStoryUpload,
     multipleMedia,
+    isItTakeTime,
+    setIsItTakeTime,
   } = useStory()
 
   const { likedSlides, toggleLike } = useLikes()
@@ -456,9 +458,14 @@ const Stories: React.FC = () => {
           accept="image/*,video/*"
           multiple
           className="hidden"
-          onChange={e => {
+          onChange={async (e: React.ChangeEvent<HTMLInputElement>) => {
             const files = e.target.files
+            console.log("files", files)
             if (!files || files.length === 0) return
+            setIsItTakeTime(true)
+            for (let i = 0; i < files.length; i++) {
+              await uploadStory(files[i])
+            }
             addUploadsToUser(0, files)
             if (multipleMedia) {
               for (let i = 0; i < files.length; i++) {
@@ -466,6 +473,7 @@ const Stories: React.FC = () => {
               }
             }
             if (fileInputRef.current) fileInputRef.current.value = ""
+            setIsItTakeTime(false)
           }}
         />
         <div className=" grid grid-flow-col-dense gap-0 overflow-x-auto no-scrollbar transition-all duration-150">
@@ -488,10 +496,16 @@ const Stories: React.FC = () => {
                       style={
                         {
                           "--ring": "3px",
-                          animationDuration: "0.2s",
+                          animationDuration: "0.1s",
                         } as React.CSSProperties
                       }
                       onAnimationEnd={() => handleRingEnd(idx)}
+                    />
+                  )}
+                  {idx === 0 && isItTakeTime && (
+                    <div
+                      className="story-ring-rotator animate-spin"
+                      style={{ "--ring": "3px" } as React.CSSProperties}
                     />
                   )}
                   <div className="w-full h-full rounded-full bg-white p-[3px] relative z-20">
@@ -500,6 +514,7 @@ const Stories: React.FC = () => {
                   {idx === 0 &&
                     (slidesByStory[idx]?.length ?? 0) === 0 &&
                     !isStoryUpload &&
+                    !isItTakeTime &&
                     idx === 0 && (
                       <div className=" absolute bottom-1 right-1 w-5 h-5 rounded-full bg-white p-[3px] z-40">
                         <IoAdd className="w-full h-full bg-blue-500 text-white rounded-full" />
