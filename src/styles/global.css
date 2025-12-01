@@ -1,3 +1,4 @@
+/* global.css */
 @import "tailwindcss";
 
 .story-ring {
@@ -13,16 +14,24 @@
   }
 }
 
-/* Overlay ring with fixed thickness, independent of padding */
+/* Overlay ring with fixed thickness, independent of padding 
+   #ff0050,
+  #ff6f00,
+  #ffd500,
+  #ff00c8,
+  #ff0050 
+*/
 .story-ring-rotator {
   position: absolute;
   inset: 0;
   border-radius: 9999px;
-  background: conic-gradient( #ff0050,
-  #ff6f00,
-  #ffd500,
-  #ff00c8,
-  #ff0050);
+  background: conic-gradient( 
+  rgba(255, 0, 80, 0.9),
+  rgba(255, 111, 0, 0.9),
+  rgba(255, 213, 0, 0.9),
+  rgba(255, 0, 200, 0.9),
+  rgba(255, 0, 80, 0.9)
+  );
   z-index: 30;
   -webkit-mask: radial-gradient(
     farthest-side,
@@ -37,6 +46,12 @@
   pointer-events: none;
 }
 
+.story-ring-sweepspin {
+  animation:
+    ring-spin 0.8s cubic-bezier(0.22, 1.2, 0.32, 1) forwards,
+    ring-sweep 3s linear forwards;
+}
+
 
 /* Sweep progress from right (0deg) → clockwise using a conic mask */
 @property --sweep {
@@ -45,6 +60,9 @@
   initial-value: 0deg;
 }
 @keyframes ring-sweep {
+  from {
+    --sweep: 0deg;
+  }
   to {
     --sweep: 360deg;
   }
@@ -60,8 +78,9 @@
   /* Compose to intersection (broad support with prefixed version) */
   -webkit-mask-composite: source-in;
   mask-composite: intersect;
-  animation: ring-sweep 3s linear forwards;
+  animation: ring-sweep 0.8s linear forwards;
 }
+
 
 @keyframes ping {
   75%, 100% {

@@ -492,11 +492,11 @@ const Stories: React.FC = () => {
                   )}
                   {openingIdx === idx && (
                     <div
-                      className="story-ring-rotator story-ring-sweep"
+                      className="story-ring-rotator story-ring-sweepspin story-ring-colorcycle story-ring-pop"
                       style={
                         {
-                          "--ring": "3px",
-                          animationDuration: "0.1s",
+                          "--ring": "4px",
+                          animationDuration: "0.5s",
                         } as React.CSSProperties
                       }
                       onAnimationEnd={() => handleRingEnd(idx)}
@@ -504,8 +504,12 @@ const Stories: React.FC = () => {
                   )}
                   {idx === 0 && isItTakeTime && (
                     <div
-                      className="story-ring-rotator animate-spin"
-                      style={{ "--ring": "3px" } as React.CSSProperties}
+                      className="story-ring-rotator story-ring-trail story-ring-trailspin story-ring-colorcycle"
+                      style={
+                        {
+                          "--ring": "4px",
+                        } as React.CSSProperties
+                      }
                     />
                   )}
                   <div className="w-full h-full rounded-full bg-white p-[3px] relative z-20">
@@ -789,6 +793,8 @@ const Stories: React.FC = () => {
                     currentStory={currentStory}
                     currentSlide={currentSlide}
                     ownerName={users[currentStory]?.name}
+                    startHold={startHold as () => void}
+                    endHold={endHold as () => void}
                   />
                 </React.Suspense>
               )}

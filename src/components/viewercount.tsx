@@ -3,7 +3,7 @@ import ProfileButton from "./profilebutton"
 import { BiSolidShare } from "react-icons/bi"
 import { IoEye } from "react-icons/io5"
 import { IoDownloadOutline } from "react-icons/io5"
-import { MdDelete } from "react-icons/md"
+import { MdDelete, MdOutlineFileUpload } from "react-icons/md"
 import { RxCross2 } from "react-icons/rx"
 import { IoEllipsisVertical } from "react-icons/io5"
 import { MdFavorite } from "react-icons/md"
@@ -11,6 +11,8 @@ import { storiesData } from "./storiesData"
 import { useLikes } from "../context/likesContext"
 import { currentUsername } from "../context/auth"
 import { makeSlideKey } from "../utils/storyKeys"
+import { useStory } from "../context/storyContext"
+import { uploadStory } from "../lib/uploadMedia"
 
 export const Viewercount: React.FC<{
   panelHeight: number
@@ -24,6 +26,8 @@ export const Viewercount: React.FC<{
   currentStory: number
   currentSlide: number
   ownerName: string
+  startHold: () => void
+  endHold: () => void
 }> = ({
   panelHeight,
   setPanelHeight,
@@ -36,10 +40,22 @@ export const Viewercount: React.FC<{
   currentStory,
   currentSlide,
   ownerName,
+  startHold,
+  endHold,
 }) => {
   const MIN_HEIGHT = 230
   const MAX_HEIGHT = 400
   const { likedSlides } = useLikes()
+  const {
+    allStories,
+    setAllStories,
+    setUploadModalOpen,
+    addUploadsToUser,
+    multipleMedia,
+    isItTakeTime,
+    setIsItTakeTime,
+  } = useStory()
+  const fileInputRef = React.useRef<HTMLInputElement | null>(null)
 
   const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
     e.stopPropagation()
@@ -50,6 +66,13 @@ export const Viewercount: React.FC<{
         : (e as React.MouseEvent).clientY
     setDragStartY(clientY)
     setStartHeight(panelHeight)
+    startHold()
+  }
+
+  const removeStory = (storyIndex: number) => {
+    const updatedStory = allStories?.filter((_, index) => index !== storyIndex)
+    const slides = updatedStory[storyIndex]?.slides
+    setAllStories(updatedStory)
   }
 
   const handleDragMove = (e: React.MouseEvent | React.TouchEvent) => {
@@ -84,6 +107,7 @@ export const Viewercount: React.FC<{
     }
 
     setDragStartY(null)
+    endHold()
   }
 
   const currentKey = React.useMemo(() => {
@@ -136,11 +160,25 @@ export const Viewercount: React.FC<{
         <div className="flex items-center justify-between px-3 py-2 shadow-sm bg-white">
           <div className="flex items-center gap-2">
             <IoEye className="w-5 h-5" />
-            <span className="text-sm font-medium">5 views</span>
+            <span className="text-sm font-medium">10 views</span>
           </div>
           <div className="flex items-center gap-2">
+            <MdOutlineFileUpload
+              className="w-5 h-5"
+              onClick={() => {
+                try {
+                  startHold()
+                } catch {}
+                fileInputRef.current?.click()
+                setIsCountOpen(false)
+              }}
+              aria-label="Upload"
+            />
             <IoDownloadOutline className="w-5 h-5" />
-            <MdDelete className="w-5 h-5" />
+            <MdDelete
+              className="w-5 h-5"
+              onClick={() => removeStory(currentStory)}
+            />
             <button
               className="p-1 rounded hover:bg-gray-100"
               onClick={() => setIsCountOpen(false)}
@@ -152,6 +190,31 @@ export const Viewercount: React.FC<{
         </div>
 
         <div className="overflow-auto px-3 pb-4 pt-2 h-[calc(100%-60px)]">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*,video/*"
+            multiple
+            className="hidden"
+            onChange={async (e: React.ChangeEvent<HTMLInputElement>) => {
+              const files = e.target.files
+              if (!files || files.length === 0) return
+              setIsItTakeTime(true)
+              startHold()
+              for (let i = 0; i < files.length; i++) {
+                await uploadStory(files[i])
+              }
+              addUploadsToUser(0, files)
+              if (multipleMedia) {
+                for (let i = 0; i < files.length; i++) {
+                  addUploadsToUser(0, [files[i]])
+                }
+              }
+              e.currentTarget.value = ""
+              setIsItTakeTime(false)
+              endHold()
+            }}
+          />
           <p className="text-sm font-semibold py-2">Viewers</p>
           {users?.map((user: { id: number; name: string }) => (
             <div

@@ -11,6 +11,8 @@ type StoryContextValue = {
   multipleMedia: boolean
   isItTakeTime: boolean
   setIsItTakeTime: (isTakeTime: boolean) => void
+  uploadModalOpen: boolean
+  setUploadModalOpen: (isOpen: boolean) => void
 }
 
 const StoryContext = React.createContext<StoryContextValue | null>(null)
@@ -23,7 +25,7 @@ export const StoryProvider: React.FC<{ children: React.ReactNode }> = ({
   const [isStoryUpload, setIsStoryUpload] = React.useState(false)
   const [multipleMedia, setMultipleMedia] = React.useState<boolean>(false)
   const [isItTakeTime, setIsItTakeTime] = React.useState(false)
-
+  const [uploadModalOpen,setUploadModalOpen] = React.useState(false)
   const addUploadsToUser = React.useCallback(
     (userIndex: number, files: FileList | File[]) => {
       const fileArray = Array.from(files as FileList)
@@ -90,6 +92,8 @@ export const StoryProvider: React.FC<{ children: React.ReactNode }> = ({
         multipleMedia,
         isItTakeTime,
         setIsItTakeTime,
+        uploadModalOpen,
+        setUploadModalOpen,
       }}
     >
       {children}

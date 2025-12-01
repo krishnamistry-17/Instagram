@@ -14,6 +14,7 @@ import { MdDarkMode } from "react-icons/md"
 
 const SettingPage: React.FC = () => {
   const details = [
+    //display here icon without tag
     { id: 3, label: "Privacy", icon: FaEye },
     { id: 2, label: "Security", icon: FaLock },
     { id: 4, label: "Notifications", icon: FaBell },
@@ -53,6 +54,7 @@ const SettingPage: React.FC = () => {
                     className="w-full flex items-center gap-2 hover:bg-gray-50 rounded-md p-3 text-left"
                     onClick={() => item.id === 7 && setLogoutModal(true)}
                   >
+                    {/*display here item with tag */}
                     <item.icon className="w-5 h-5" />
                     <span className="text-sm">{item.label}</span>
                     <FaAngleRight className="w-5 h-5 text-gray-300 ml-auto" />
