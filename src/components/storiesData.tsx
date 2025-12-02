@@ -2,13 +2,19 @@ import * as React from "react"
 import { StaticImage } from "gatsby-plugin-image"
 
 export type SlideDef = { id: string; type: "image" | "video" }
-export type StoryDef = { id: string; user: string; slides: SlideDef[] }
+export type StoryDef = {
+  id: string
+  user: string
+  slides: SlideDef[]
+  created_at: number
+}
 
 export const storiesData: StoryDef[] = [
   {
     id: "s1",
     user: "you",
     slides: [],
+    created_at: Date.now(),
   },
   {
     id: "s2",
@@ -27,6 +33,7 @@ export const storiesData: StoryDef[] = [
       { type: "image", id: "image12" },
       { type: "image", id: "image15" },
     ],
+    created_at: Date.now(),
   },
   {
     id: "s3",
@@ -47,6 +54,7 @@ export const storiesData: StoryDef[] = [
       { type: "image", id: "image16" },
       { type: "image", id: "image11" },
     ],
+    created_at: Date.now(),
   },
   {
     id: "s4",
@@ -60,6 +68,7 @@ export const storiesData: StoryDef[] = [
       { type: "image", id: "image6" },
       { type: "image", id: "image11" },
     ],
+    created_at: Date.now(),
   },
   {
     id: "s5",
@@ -73,6 +82,7 @@ export const storiesData: StoryDef[] = [
       { type: "image", id: "image7" },
       { type: "image", id: "image13" },
     ],
+    created_at: Date.now(),
   },
   {
     id: "s6",
@@ -85,6 +95,7 @@ export const storiesData: StoryDef[] = [
       { type: "image", id: "image7" },
       { type: "image", id: "image8" },
     ],
+    created_at: Date.now(),
   },
   {
     id: "s7",
@@ -98,6 +109,7 @@ export const storiesData: StoryDef[] = [
       { type: "image", id: "image7" },
       { type: "image", id: "image13" },
     ],
+    created_at: Date.now(),
   },
   {
     id: "s8",
@@ -112,6 +124,7 @@ export const storiesData: StoryDef[] = [
       { type: "image", id: "image9" },
       { type: "image", id: "image10" },
     ],
+    created_at: Date.now(),
   },
   {
     id: "s9",
@@ -124,6 +137,7 @@ export const storiesData: StoryDef[] = [
       { type: "image", id: "image6" },
       { type: "image", id: "image13" },
     ],
+    created_at: Date.now(),
   },
   {
     id: "s10",
@@ -136,6 +150,7 @@ export const storiesData: StoryDef[] = [
       { type: "image", id: "image11" },
       { type: "image", id: "image8" },
     ],
+    created_at: Date.now(),
   },
   {
     id: "s11",
@@ -149,6 +164,7 @@ export const storiesData: StoryDef[] = [
       { type: "image", id: "image12" },
       { type: "image", id: "image11" },
     ],
+    created_at: Date.now(),
   },
   {
     id: "s12",
@@ -162,6 +178,7 @@ export const storiesData: StoryDef[] = [
       { type: "image", id: "image10" },
       { type: "image", id: "image13" },
     ],
+    created_at: Date.now(),
   },
   {
     id: "s13",
@@ -176,6 +193,7 @@ export const storiesData: StoryDef[] = [
       { type: "image", id: "image10" },
       { type: "image", id: "image13" },
     ],
+    created_at: Date.now(),
   },
   {
     id: "s14",
@@ -191,6 +209,7 @@ export const storiesData: StoryDef[] = [
       { type: "image", id: "image12" },
       { type: "image", id: "image11" },
     ],
+    created_at: Date.now(),
   },
   {
     id: "s15",
@@ -205,6 +224,7 @@ export const storiesData: StoryDef[] = [
       { type: "image", id: "image9" },
       { type: "image", id: "image10" },
     ],
+    created_at: Date.now(),
   },
   {
     id: "s16",
@@ -218,6 +238,7 @@ export const storiesData: StoryDef[] = [
       { type: "image", id: "image13" },
       { type: "image", id: "image16" },
     ],
+    created_at: Date.now(),
   },
   {
     id: "s17",
@@ -231,6 +252,7 @@ export const storiesData: StoryDef[] = [
       { type: "image", id: "image16" },
       { type: "image", id: "image11" },
     ],
+    created_at: Date.now(),
   },
   {
     id: "s18",
@@ -243,6 +265,7 @@ export const storiesData: StoryDef[] = [
       { type: "image", id: "image16" },
       { type: "image", id: "image11" },
     ],
+    created_at: Date.now(),
   },
 ]
 

@@ -11,13 +11,22 @@ import { FaInfoCircle } from "react-icons/fa"
 import { FaSignOutAlt } from "react-icons/fa"
 import { IoClose } from "react-icons/io5"
 import { MdDarkMode } from "react-icons/md"
+import { MdArchive } from "react-icons/md"
 
 const SettingPage: React.FC = () => {
+  const handleNavigate = (id: number) => {
+    if (id === 7) {
+      setLogoutModal(true)
+    } else if (id === 9) {
+      navigate("/archive")
+    }
+  }
   const details = [
     //display here icon without tag
     { id: 3, label: "Privacy", icon: FaEye },
     { id: 2, label: "Security", icon: FaLock },
     { id: 4, label: "Notifications", icon: FaBell },
+    { id: 9, label: "Archive", icon: MdArchive },
     { id: 8, label: "Theme", icon: MdDarkMode },
     { id: 5, label: "Help", icon: FaQuestion },
     { id: 1, label: "Account", icon: FaUser },
@@ -52,7 +61,7 @@ const SettingPage: React.FC = () => {
                 <li key={item.id} className="px-2">
                   <button
                     className="w-full flex items-center gap-2 hover:bg-gray-50 rounded-md p-3 text-left"
-                    onClick={() => item.id === 7 && setLogoutModal(true)}
+                    onClick={() => handleNavigate(item?.id)}
                   >
                     {/*display here item with tag */}
                     <item.icon className="w-5 h-5" />
