@@ -1,6 +1,22 @@
 /* global.css */
 @import "tailwindcss";
 
+.embla {
+  overflow: hidden;
+  width: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+.embla__container {
+  display: flex;
+  touch-action: pan-y pinch-zoom;
+  margin-left: calc(var(--slide-spacing) * -1);
+}
+.embla__slide {
+  flex: 0 0 auto;
+  width: 72px;
+}
+
+
 .story-ring {
   animation: ring-spin 1s linear forwards;
 }

@@ -15,6 +15,7 @@ import { makeSlideKey } from "../utils/storyKeys"
 import { useStory } from "../context/storyContext"
 import StoryDataSync from "./StoryDataSync"
 import { uploadStory } from "../lib/uploadMedia"
+import useEmblaCarousel from "embla-carousel-react"
 
 const ViewercountLazy = React.lazy(() =>
   import("./viewercount").then(m => ({ default: m.Viewercount }))
@@ -35,9 +36,16 @@ const Stories: React.FC = () => {
       { id: 10, name: "mary" },
       { id: 11, name: "nina" },
       { id: 12, name: "olive" },
+      { id: 13, name: "paul" },
+      { id: 14, name: "rachel" },
+      { id: 15, name: "sam" },
+      { id: 16, name: "ena" },
+      { id: 17, name: "fiona" },
+      { id: 18, name: "george" },
     ],
     []
   )
+
   const {
     allStories,
     uploads,
@@ -81,6 +89,13 @@ const Stories: React.FC = () => {
   const MIN_HEIGHT = 230
   const [dragStartY, setDragStartY] = React.useState<number | null>(null)
   const [startHeight, setStartHeight] = React.useState<number>(MIN_HEIGHT)
+
+  const [emblaRef] = useEmblaCarousel({
+    align: "start",
+    dragFree: true,
+    containScroll: "trimSnaps",
+    loop: false,
+  })
 
   const currentSlideKey = React.useMemo(() => {
     const story = allStories[currentStory]
@@ -476,59 +491,62 @@ const Stories: React.FC = () => {
             setIsItTakeTime(false)
           }}
         />
-        <div className=" grid grid-flow-col-dense gap-0 overflow-x-auto no-scrollbar transition-all duration-150">
-          {users.map((user, idx) => (
-            <div
-              key={user.id}
-              className="w-18 flex flex-col items-center shrink-0"
-            >
-              <div className="relative mx-auto">
-                <div
-                  className="w-16 h-16 relative cursor-pointer"
-                  onClick={() => handleCircleClick(idx)}
-                >
-                  {openingIdx !== idx && (
-                    <div className="absolute inset-0 rounded-full p-[2px] bg-linear-to-tr from-pink-500 to-yellow-500" />
-                  )}
-                  {openingIdx === idx && (
+        <div className="embla">
+          <div className="embla__viewport" ref={emblaRef}>
+            <div className="embla__container">
+              {users.map((user, idx) => (
+                <div key={user.id} className="embla__slide">
+                  <div className="relative mx-auto">
                     <div
-                      className="story-ring-rotator story-ring-sweepspin story-ring-colorcycle story-ring-pop"
-                      style={
-                        {
-                          "--ring": "4px",
-                          animationDuration: "0.5s",
-                        } as React.CSSProperties
-                      }
-                      onAnimationEnd={() => handleRingEnd(idx)}
-                    />
-                  )}
-                  {idx === 0 && isItTakeTime && (
-                    <div
-                      className="story-ring-rotator story-ring-trail story-ring-trailspin story-ring-colorcycle"
-                      style={
-                        {
-                          "--ring": "4px",
-                        } as React.CSSProperties
-                      }
-                    />
-                  )}
-                  <div className="w-full h-full rounded-full bg-white p-[3px] relative z-20">
-                    {renderAvatar(user.name)}
-                  </div>
-                  {idx === 0 &&
-                    (slidesByStory[idx]?.length ?? 0) === 0 &&
-                    !isStoryUpload &&
-                    !isItTakeTime &&
-                    idx === 0 && (
-                      <div className=" absolute bottom-1 right-1 w-5 h-5 rounded-full bg-white p-[3px] z-40">
-                        <IoAdd className="w-full h-full bg-blue-500 text-white rounded-full" />
+                      className="w-16 h-16 relative cursor-pointer"
+                      onClick={() => handleCircleClick(idx)}
+                    >
+                      {openingIdx !== idx && (
+                        <div className="absolute inset-0 rounded-full p-[2px] bg-linear-to-tr from-pink-500 to-yellow-500" />
+                      )}
+                      {openingIdx === idx && (
+                        <div
+                          className="story-ring-rotator story-ring-sweepspin story-ring-colorcycle story-ring-pop"
+                          style={
+                            {
+                              "--ring": "4px",
+                              animationDuration: "0.5s",
+                            } as React.CSSProperties
+                          }
+                          onAnimationEnd={() => handleRingEnd(idx)}
+                        />
+                      )}
+                      {idx === 0 && isItTakeTime && (
+                        <div
+                          className="story-ring-rotator story-ring-trail story-ring-trailspin story-ring-colorcycle"
+                          style={
+                            {
+                              "--ring": "4px",
+                            } as React.CSSProperties
+                          }
+                        />
+                      )}
+                      <div className="w-full h-full rounded-full bg-white p-[3px] relative z-20">
+                        {renderAvatar(user.name)}
                       </div>
-                    )}
+                      {idx === 0 &&
+                        (slidesByStory[idx]?.length ?? 0) === 0 &&
+                        !isStoryUpload &&
+                        !isItTakeTime &&
+                        idx === 0 && (
+                          <div className=" absolute bottom-1 right-1 w-5 h-5 rounded-full bg-white p-[3px] z-40">
+                            <IoAdd className="w-full h-full bg-blue-500 text-white rounded-full" />
+                          </div>
+                        )}
+                    </div>
+                  </div>
+                  <p className="mt-2 text-center text-sm truncate">
+                    {user.name}
+                  </p>
                 </div>
-              </div>
-              <p className="mt-2 text-center text-sm truncate">{user.name}</p>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
       </div>
 
@@ -795,6 +813,7 @@ const Stories: React.FC = () => {
                     ownerName={users[currentStory]?.name}
                     startHold={startHold as () => void}
                     endHold={endHold as () => void}
+                    goNext={goNext}
                   />
                 </React.Suspense>
               )}

@@ -52,6 +52,14 @@ const Content: React.FC = () => {
         caption: "A beautiful day in the park",
         time: "12 hours ago",
       },
+      {
+        id: 4,
+        userName: "dave",
+        location: "Chicago, IL",
+        likes: 34,
+        caption: "A beautiful day in the park",
+        time: "12 hours ago",
+      },
     ])
   }, [])
   const [ShareDialogOpen, setShareDialogOpen] = React.useState(false)
@@ -133,6 +141,15 @@ const Content: React.FC = () => {
       return (
         <StaticImage
           src="../images/image4.png"
+          alt="post image"
+          className="w-full h-auto"
+        />
+      )
+    }
+    if (userName === "dave") {
+      return (
+        <StaticImage
+          src="../images/image11.png"
           alt="post image"
           className="w-full h-auto"
         />

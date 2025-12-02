@@ -10,6 +10,7 @@
     "@types/node": "^24.10.1",
     "@types/react": "^18.3.4",
     "@types/react-dom": "^18.3.0",
+    "embla-carousel-react": "^8.6.0",
     "gatsby": "^5.14.6",
     "gatsby-omni-font-loader": "^2.0.2",
     "gatsby-plugin-image": "^3.15.0",
@@ -25,7 +26,10 @@
     "react-dom": "^18.2.0",
     "react-helmet": "^6.1.0",
     "react-icons": "^5.5.0",
+    "react-slick": "^0.31.0",
+    "react-slider": "^2.0.6",
     "react-toastify": "^11.0.5",
+    "slick-carousel": "^1.8.1",
     "typescript": "^5.9.3"
   },
   "devDependencies": {
@@ -45,7 +49,7 @@
   "scripts": {
     "build": "gatsby build",
     "develop": "gatsby develop",
-    "dev": "gatsby develop  --host 192.168.29.33",
+    "dev": "gatsby develop --host 192.168.29.33",
     "dev:redux": "GATSBY_DISABLE_LMDB=1 GATSBY_DB_NODES=redux gatsby develop",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md,css}\"",
     "start": "gatsby develop",

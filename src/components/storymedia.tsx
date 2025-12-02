@@ -73,6 +73,48 @@ export const imageComponents: Record<string, JSX.Element> = {
       className="w-full h-full object-cover"
     />
   ),
+  image11: (
+    <StaticImage
+      src="../images/image11.png"
+      alt="image11"
+      className="w-full h-full object-cover"
+    />
+  ),
+  image12: (
+    <StaticImage
+      src="../images/image12.png"
+      alt="image12"
+      className="w-full h-full object-cover"
+    />
+  ),
+  image13: (
+    <StaticImage
+      src="../images/image13.png"
+      alt="image13"
+      className="w-full h-full object-cover"
+    />
+  ),
+  image14: (
+    <StaticImage
+      src="../images/image14.png"
+      alt="image14"
+      className="w-full h-full object-cover"
+    />
+  ),
+  image15: (
+    <StaticImage
+      src="../images/image15.png"
+      alt="image15"
+      className="w-full h-full object-cover"
+    />
+  ),
+  image16: (
+    <StaticImage
+      src="../images/image16.png"
+      alt="image16"
+      className="w-full h-full object-cover"
+    />
+  ),
 }
 
 export const videoComponents: Record<string, JSX.Element> = {

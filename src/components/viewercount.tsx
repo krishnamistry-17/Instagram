@@ -28,6 +28,7 @@ export const Viewercount: React.FC<{
   ownerName: string
   startHold: () => void
   endHold: () => void
+  goNext: () => void
 }> = ({
   panelHeight,
   setPanelHeight,
@@ -42,6 +43,7 @@ export const Viewercount: React.FC<{
   ownerName,
   startHold,
   endHold,
+  goNext,
 }) => {
   const MIN_HEIGHT = 230
   const MAX_HEIGHT = 400
@@ -55,7 +57,11 @@ export const Viewercount: React.FC<{
     isItTakeTime,
     setIsItTakeTime,
   } = useStory()
+
   const fileInputRef = React.useRef<HTMLInputElement | null>(null)
+  const [saveNextStory, setSaveNextStory] = React.useState<number | null>(null)
+  const [showSaveNextStory, setShowSaveNextStory] =
+    React.useState<boolean>(false)
 
   const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
     e.stopPropagation()
@@ -145,7 +151,7 @@ export const Viewercount: React.FC<{
         }}
       >
         <div
-          className="w-full flex justify-center py-2 cursor-grab"
+          className="w-full flex justify-center py-2 "
           onMouseDown={handleDragStart}
           onTouchStart={handleDragStart}
           onMouseMove={handleDragMove}
@@ -170,7 +176,8 @@ export const Viewercount: React.FC<{
                   startHold()
                 } catch {}
                 fileInputRef.current?.click()
-                setIsCountOpen(false)
+                setSaveNextStory(currentStory)
+                setShowSaveNextStory(true)
               }}
               aria-label="Upload"
             />
@@ -210,9 +217,25 @@ export const Viewercount: React.FC<{
                   addUploadsToUser(0, [files[i]])
                 }
               }
-              e.currentTarget.value = ""
+              if (fileInputRef.current) {
+                try {
+                  fileInputRef.current.value = ""
+                } catch {}
+              }
               setIsItTakeTime(false)
               endHold()
+
+              try {
+                goNext()
+              } catch {}
+
+              // if (showSaveNextStory) {
+              //   setTimeout(() => {
+              //     fileInputRef.current?.click()
+              //   }, 50)
+              //   setShowSaveNextStory(false)
+              // }
+              setIsCountOpen(false)
             }}
           />
           <p className="text-sm font-semibold py-2">Viewers</p>
