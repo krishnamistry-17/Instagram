@@ -13,9 +13,12 @@ import { useLikes } from "../context/likesContext"
 import { currentUsername } from "../context/auth"
 import { makeSlideKey } from "../utils/storyKeys"
 import { useStory } from "../context/storyContext"
-import StoryDataSync from "./StoryDataSync"
 import { uploadStory } from "../lib/uploadMedia"
 import useEmblaCarousel from "embla-carousel-react"
+
+const StoryDataSyncLazy = React.lazy(() =>
+  import("./StoryDataSync").then(m => ({ default: m.default }))
+)
 
 const ViewercountLazy = React.lazy(() =>
   import("./viewercount").then(m => ({ default: m.Viewercount }))
@@ -168,32 +171,6 @@ const Stories: React.FC = () => {
       setIsPaused(false)
       setIsMuted(true)
       return
-    }
-
-    const preventDefault = (e: Event) => {
-      if (typeof (e as any).preventDefault === "function") {
-        ;(e as any).preventDefault()
-      }
-    }
-    const preventKeyScroll = (e: KeyboardEvent) => {
-      const blocked =
-        e.key === " " ||
-        e.key === "Spacebar" ||
-        e.key === "PageUp" ||
-        e.key === "PageDown" ||
-        e.key === "ArrowUp" ||
-        e.key === "ArrowDown"
-      if (blocked) {
-        e.preventDefault()
-      }
-    }
-    window.addEventListener("wheel", preventDefault, { passive: false })
-    window.addEventListener("touchmove", preventDefault, { passive: false })
-    window.addEventListener("keydown", preventKeyScroll, { passive: false })
-    return () => {
-      window.removeEventListener("wheel", preventDefault as any)
-      window.removeEventListener("touchmove", preventDefault as any)
-      window.removeEventListener("keydown", preventKeyScroll as any)
     }
   }, [isOpen])
 
@@ -465,7 +442,9 @@ const Stories: React.FC = () => {
 
   return (
     <section className="bg-white border border-gray-200 rounded-md md:rounded-xl shadow-sm">
-      <StoryDataSync />
+      <React.Suspense fallback={null}>
+        <StoryDataSyncLazy />
+      </React.Suspense>
       <div className="px-3 py-3">
         <input
           ref={fileInputRef}

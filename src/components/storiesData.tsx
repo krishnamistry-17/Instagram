@@ -274,6 +274,7 @@ export const renderAvatar = (name: string) => {
     return (
       <StaticImage
         src="../images/image5.png"
+        loading="eager"
         className="w-full h-full rounded-full object-cover"
         alt={name}
       />

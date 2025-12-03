@@ -65,20 +65,17 @@ const Header: React.FC = () => {
           </div>
         </div>
         <div className="flex items-center gap-4">
-          <button
-            onClick={() => setIsSearchOpen(!isSearchOpen)}
-            className=" md:block hidden"
-          >
-            <IoSearch className="w-5 h-5 text-white" />
+          <button onClick={() => setIsSearchOpen(!isSearchOpen)}>
+            <IoSearch className="w-5 h-5 text-white  md:block hidden" />
           </button>
-          <Link to="/" className="sm:block hidden">
-            <FaHouse className="text-md text-white" />
+          <Link to="/">
+            <FaHouse className="text-md text-white sm:block hidden" />
           </Link>
-          <Link to="/chats" className=" ">
+          <Link to="/chats">
             <BsFillChatDotsFill className="text-md text-white" />
           </Link>
-          <Link to="/favorites" className="sm:block hidden">
-            <MdFavoriteBorder className="text-xl text-white" />
+          <Link to="/favorites">
+            <MdFavoriteBorder className="text-xl text-white sm:block hidden" />
           </Link>
           <button
             type="button"
